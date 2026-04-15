@@ -1,0 +1,26 @@
+.section-page {
+  padding: 1.2rem;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.section-page h2 {
+  margin-top: 0.35rem;
+  font-size: clamp(1.2rem, 2vw, 1.6rem);
+}
+
+.section-page__eyebrow {
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.72rem;
+}
+
+.section-page__hint {
+  border-left: 4px solid var(--success);
+  background: rgba(31, 138, 112, 0.08);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 0.65rem 0.8rem;
+  color: #1f8a70;
+  font-weight: 500;
+}

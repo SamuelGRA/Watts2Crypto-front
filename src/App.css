@@ -1,0 +1,73 @@
+.landing {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.hero {
+  padding: clamp(1.25rem, 2.8vw, 2.4rem);
+  background:
+    linear-gradient(135deg, rgba(3, 2, 19, 1) 0%, rgba(23, 21, 68, 1) 48%, rgba(31, 138, 112, 1) 100%);
+  color: #f5f6ff;
+  border: none;
+}
+
+.hero h1 {
+  margin-top: 0.35rem;
+  margin-bottom: 0.55rem;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.hero p {
+  max-width: 64ch;
+  color: rgba(245, 246, 255, 0.88);
+}
+
+.kicker {
+  text-transform: uppercase;
+  font-size: 0.76rem;
+  letter-spacing: 0.12em;
+  color: rgba(245, 246, 255, 0.72);
+}
+
+.actions {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.info-card {
+  padding: 1.2rem;
+}
+
+.info-card h2 {
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+}
+
+.info-card ul {
+  margin: 0;
+  padding-left: 1.15rem;
+  color: var(--muted-foreground);
+  display: grid;
+  gap: 0.45rem;
+}
+
+@media (max-width: 860px) {
+  .landing {
+    padding-top: 1.5rem;
+  }
+
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+}

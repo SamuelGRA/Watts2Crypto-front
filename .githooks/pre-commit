@@ -1,0 +1,9 @@
+#!/bin/sh
+echo "Ejecutando build completa antes del commit..."
+npm run build
+if [ $? -ne 0 ]; then
+  echo "BUILD FALLIDA. Commit cancelado."
+  exit 1
+fi
+echo "BUILD EXITOSA. Continuando con el commit."
+exit 0

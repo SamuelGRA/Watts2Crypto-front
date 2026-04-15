@@ -1,0 +1,109 @@
+.main-layout {
+  min-height: 100dvh;
+  padding-bottom: 2rem;
+}
+
+.top-header {
+  border-bottom: 1px solid var(--border);
+  background: var(--header-bg);
+}
+
+.top-header__inner {
+  min-height: 104px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 1.05rem;
+}
+
+.top-header__inner h1 {
+  color: var(--brand-title);
+  font-size: clamp(1.55rem, 2.8vw, 2.1rem);
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+.top-header__subtitle {
+  margin-top: 0.2rem;
+  color: var(--header-subtitle);
+  font-size: 1.02rem;
+}
+
+.theme-toggle {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.75rem;
+  color: var(--muted-foreground);
+  background: var(--toggle-bg);
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  color: var(--foreground);
+  background: var(--toggle-bg-hover);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.tabs-nav {
+  background: var(--header-bg);
+}
+
+.tabs-nav__list {
+  display: flex;
+  gap: 0.3rem;
+  overflow-x: auto;
+  padding-block: 0.25rem;
+}
+
+.tab-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.78rem 0.95rem 0.72rem;
+  border-bottom: 2px solid transparent;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+  font-weight: 500;
+  transition: color 140ms ease, border-color 140ms ease;
+}
+
+.tab-link:hover {
+  color: var(--foreground);
+}
+
+.tab-link:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.tab-link--active {
+  color: var(--brand-title);
+  border-color: var(--primary);
+}
+
+.content-shell {
+  margin-top: 1.2rem;
+}
+
+@media (max-width: 760px) {
+  .top-header__inner {
+    min-height: unset;
+    padding-block: 0.9rem;
+  }
+
+  .top-header__subtitle {
+    font-size: 0.95rem;
+  }
+
+  .theme-toggle span {
+    display: none;
+  }
+}
