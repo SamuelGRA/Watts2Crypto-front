@@ -20,7 +20,7 @@ const navItems = [
   { to: '/electricity', label: 'Electricidad', icon: Zap },
   { to: '/currencies', label: 'Divisas', icon: CircleDollarSign },
   { to: '/pools', label: 'Pools', icon: Layers },
-  { to: '/guide', label: 'Guia', icon: BookOpen },
+  { to: '/guide', label: 'Guía', icon: BookOpen },
 ]
 
 export function MainLayout() {
