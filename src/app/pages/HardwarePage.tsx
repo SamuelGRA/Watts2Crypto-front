@@ -238,7 +238,7 @@ export function HardwarePage() {
         )}
       </section>
 
-      {filteredData.length === 0 ? (
+      {hasActiveFilters && filteredData.length === 0 ? (
         <div className="card no-results">
           No se encontraron resultados con los filtros seleccionados.
         </div>
