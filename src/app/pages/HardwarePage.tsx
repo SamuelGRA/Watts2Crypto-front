@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ChevronRight, Filter, Search, TrendingUp, X, Info, TriangleAlert } from 'lucide-react'
+import { ChevronRight, Filter, Search, TrendingUp, X, Info } from 'lucide-react'
 import '../styles/hardware-page.css'
+import '../styles/info-note.css'
 import { fetchHardwareByType } from '../../api/hardwareApi'
 import type { HardwareItem, HardwareType } from '../../types/hardware'
+import { InfoNote } from '../components/InfoNote'
 
 const typeLabels: Record<HardwareType, string> = {
   gpu: 'GPU',
@@ -368,12 +370,7 @@ export function HardwarePage() {
         </div>
       )}
 
-      <aside className="hardware-note card">
-        <TriangleAlert size={20} />
-        <strong>Nota:</strong> Las cifras son estimaciones basadas en condiciones
-        actuales del mercado y coste energético medio. Verifica precios y
-        disponibilidad antes de decidir.
-      </aside>
+      <InfoNote message="Las cifras son estimaciones basadas en condiciones actuales del mercado y coste energético medio. Verifica precios y disponibilidad antes de decidir." />
     </section>
   )
 }
