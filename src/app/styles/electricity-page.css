@@ -1,0 +1,543 @@
+.electricity-currency-picker__icon {
+  color: color-mix(in srgb, var(--brand-title) 82%, var(--foreground) 18%);
+  transition: transform 160ms ease, color 160ms ease;
+}
+
+.electricity-currency-picker__trigger[aria-expanded="true"] .electricity-currency-picker__icon,
+.electricity-currency-picker__icon.is-open {
+  transform: rotate(180deg);
+  color: color-mix(in srgb, var(--brand-title) 92%, var(--foreground) 8%);
+}
+.electricity-page {
+  display: grid;
+  gap: 1rem;
+}
+
+.electricity-page__header h2 {
+  color: var(--brand-title);
+  font-size: clamp(1.7rem, 3.1vw, 2.4rem);
+  letter-spacing: -0.02em;
+}
+
+.electricity-page__header p {
+  margin-top: 0.4rem;
+}
+
+.electricity-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.electricity-stat {
+  padding: 0.95rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.electricity-stat > span {
+  color: var(--muted-foreground);
+  font-size: 0.8rem;
+}
+
+.electricity-stat > strong {
+  color: var(--brand-title);
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+
+.electricity-stat > p {
+  font-size: 0.84rem;
+}
+
+.electricity-filters {
+  padding: 0.95rem;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.electricity-filters__top {
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: 1fr;
+}
+
+.api-info {
+  margin-top: 0.45rem;
+  color: var(--muted-foreground);
+  font-size: 0.9rem;
+}
+
+.api-info--warning {
+  color: #fca5a5;
+}
+
+.search-field {
+  min-height: 2.4rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0 0.65rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--muted-foreground);
+  background: var(--muted);
+}
+
+.search-field input {
+  border: 0;
+  background: transparent;
+  color: var(--foreground);
+  width: 100%;
+  outline: none;
+}
+
+.electricity-charts {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.electricity-chart-card {
+  padding: 1rem;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.electricity-chart-card header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  align-items: start;
+}
+
+.electricity-chart-card h3 {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1.04rem;
+}
+
+.electricity-chart-card p {
+  margin-top: 0.2rem;
+  font-size: 0.86rem;
+}
+
+.electricity-chart-card__controls {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.electricity-currency-picker {
+  justify-self: end;
+  position: relative;
+}
+
+.electricity-currency-picker__trigger {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--muted);
+  color: var(--foreground);
+  padding: 0.28rem 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.22rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+.electricity-currency-picker__menu {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  min-width: 180px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--muted) 88%, black 12%);
+  box-shadow: 0 10px 22px color-mix(in srgb, black 60%, transparent);
+  padding: 0.22rem 0.22rem 0.3rem 0.22rem;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.18rem 0.18rem;
+  z-index: 6;
+}
+
+.electricity-currency-picker__menu button {
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--foreground);
+  text-align: left;
+  padding: 0.34rem 0.45rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.electricity-currency-picker__menu button:hover {
+  background: color-mix(in srgb, var(--primary) 16%, transparent);
+}
+
+.electricity-currency-picker__menu button.is-active {
+  background: color-mix(in srgb, var(--primary) 20%, transparent);
+  color: color-mix(in srgb, var(--primary) 82%, #e6fff9 18%);
+  font-weight: 700;
+}
+
+.electricity-direct-zone-block {
+  display: grid;
+  gap: 0.2rem;
+  margin-top: 0.55rem;
+  max-width: 540px;
+}
+
+.electricity-direct-zone {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.45rem;
+}
+
+.electricity-direct-zone button {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--muted);
+  color: var(--muted-foreground);
+  padding: 0.35rem 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.electricity-direct-zone button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--primary) 88%, black 12%);
+  color: var(--primary-foreground);
+  border-color: transparent;
+}
+
+.electricity-direct-zone button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.electricity-direct-zone__hint {
+  color: var(--muted-foreground);
+  font-size: 0.78rem;
+  margin-top: 0.1rem;
+}
+
+.electricity-direct-zone__mode {
+  color: color-mix(in srgb, var(--primary) 72%, #d7fff6 28%);
+  font-size: 0.8rem;
+}
+
+.electricity-spinner {
+  animation: electricity-spin 0.9s linear infinite;
+}
+
+@keyframes electricity-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.electricity-select-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.electricity-select-wrap {
+  position: relative;
+}
+
+.electricity-chart-card select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--muted);
+  color: var(--foreground);
+  padding: 0.35rem 2rem 0.35rem 0.55rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--primary) 42%, #11253e 58%)
+    color-mix(in srgb, var(--muted) 82%, #050915 18%);
+}
+
+.electricity-chart-card select::-webkit-scrollbar {
+  width: 10px;
+}
+
+.electricity-chart-card select::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--muted) 82%, #050915 18%);
+  border-radius: 999px;
+}
+
+.electricity-chart-card select::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--primary) 42%, #11253e 58%);
+  border-radius: 999px;
+  border: 2px solid color-mix(in srgb, var(--muted) 82%, #050915 18%);
+}
+
+.electricity-chart-card select::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--primary) 58%, #11253e 42%);
+}
+
+.electricity-select-wrap__icon {
+  position: absolute;
+  top: 50%;
+  right: 0.6rem;
+  transform: translateY(-50%);
+  color: color-mix(in srgb, var(--brand-title) 82%, var(--foreground) 18%);
+  z-index: 1;
+  pointer-events: none;
+  transition: transform 160ms ease, color 160ms ease;
+}
+
+.electricity-select-wrap:focus-within .electricity-select-wrap__icon {
+  transform: translateY(-50%) rotate(180deg);
+  color: color-mix(in srgb, var(--brand-title) 92%, var(--foreground) 8%);
+}
+
+.electricity-range-buttons {
+  display: inline-flex;
+  gap: 0.35rem;
+}
+
+.electricity-range-buttons button {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--muted);
+  color: var(--muted-foreground);
+  padding: 0.24rem 0.48rem;
+  cursor: pointer;
+}
+
+.electricity-range-buttons button.is-active {
+  border-color: color-mix(in srgb, var(--primary) 52%, transparent);
+  color: color-mix(in srgb, var(--primary) 78%, white 22%);
+  background: color-mix(in srgb, var(--primary) 13%, transparent);
+}
+
+.electricity-chart {
+  width: 100%;
+  height: auto;
+}
+
+.electricity-chart__grid {
+  stroke: color-mix(in srgb, var(--border) 78%, transparent);
+  stroke-width: 1;
+}
+
+.electricity-chart__axis-label {
+  fill: var(--muted-foreground);
+  font-size: 12px;
+}
+
+.electricity-chart__unit-label {
+  fill: color-mix(in srgb, var(--muted-foreground) 84%, var(--foreground) 16%);
+  font-size: 11px;
+}
+
+.electricity-chart__line {
+  fill: none;
+  stroke: color-mix(in srgb, var(--primary) 80%, #b5fff2 20%);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.electricity-line-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 0.9rem;
+  margin-top: 0.3rem;
+}
+
+.electricity-line-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--muted-foreground);
+  font-size: 0.82rem;
+}
+
+.electricity-line-legend__swatch {
+  width: 0.95rem;
+  height: 0.35rem;
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.electricity-chart__bar {
+  fill: color-mix(in srgb, var(--primary) 68%, #12483d 32%);
+}
+
+.electricity-chart__bar-label {
+  fill: color-mix(in srgb, var(--primary) 80%, #e7fff8 20%);
+  font-size: 9px;
+  font-weight: 450;
+  pointer-events: none;
+}
+
+.electricity-chart__empty {
+  color: var(--muted-foreground);
+  font-size: 0.9rem;
+  padding: 0.65rem 0;
+}
+
+.electricity-table-card {
+  padding: 1rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.electricity-table-card header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.7rem;
+  align-items: baseline;
+}
+
+.electricity-table-card h3 {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1.04rem;
+}
+
+.electricity-table {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.electricity-row {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--muted);
+  padding: 0.6rem 0.72rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.7rem;
+  align-items: center;
+}
+
+.electricity-row--external {
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--border) 55%);
+  background: color-mix(in srgb, var(--primary) 9%, var(--muted) 91%);
+}
+
+.electricity-row strong {
+  display: block;
+  font-size: 0.92rem;
+}
+
+.electricity-row span {
+  color: var(--muted-foreground);
+  font-size: 0.78rem;
+}
+
+.electricity-row__tag {
+  display: inline-block;
+  margin: 0.2rem 0.2rem 0;
+  color: color-mix(in srgb, var(--primary) 78%, #d7fff6 22%);
+  font-style: normal;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.electricity-row p {
+  color: color-mix(in srgb, var(--primary) 80%, #e7fff8 20%);
+  font-weight: 650;
+}
+
+.no-results {
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  padding: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+.pagination {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.7rem;
+}
+
+.pagination button {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.55rem 1rem;
+  background: var(--muted);
+  color: var(--muted-foreground);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--primary) 88%, black 12%);
+  color: var(--primary-foreground);
+  border-color: transparent;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination__info {
+  color: var(--muted-foreground);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+@media (max-width: 1080px) {
+  .electricity-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .electricity-currency-picker {
+    justify-self: start;
+  }
+
+  .electricity-direct-zone {
+    grid-template-columns: 1fr;
+  }
+
+  .electricity-direct-zone-block {
+    max-width: none;
+  }
+
+  .electricity-select-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .electricity-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .electricity-chart-card header {
+    flex-direction: column;
+  }
+
+  .electricity-table-card header {
+    flex-direction: column;
+    align-items: start;
+  }
+
+  .electricity-row {
+    flex-direction: column;
+    align-items: start;
+  }
+}

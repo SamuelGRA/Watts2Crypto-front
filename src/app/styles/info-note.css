@@ -1,0 +1,25 @@
+.info-note {
+  padding: 1rem;
+  border-left: 4px solid color-mix(in srgb, var(--primary) 64%, transparent);
+  background: color-mix(in srgb, var(--muted) 88%, #071021 12%);
+  display: grid;
+  gap: 0.45rem;
+}
+
+.info-note h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  color: color-mix(in srgb, var(--primary) 75%, white 25%);
+}
+
+.info-note h3 svg {
+  flex-shrink: 0;
+}
+
+.info-note p {
+  color: var(--muted-foreground);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
