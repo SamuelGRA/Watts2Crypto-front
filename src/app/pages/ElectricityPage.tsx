@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { BarChart3, LineChart, Search, Zap, ChevronDown, Loader2 } from 'lucide-react'
+import type { MouseEvent as ReactMouseEvent } from 'react'
+import { BarChart3, LineChart, Search, ChevronDown, Loader2 } from 'lucide-react'
 import '../styles/electricity-page.css'
 import '../styles/info-note.css'
 import {
@@ -143,6 +144,37 @@ function toShortDateLabel(isoDate: string): string {
   }).format(date)
 }
 
+function formatTooltipDate(timestamp: number): string {
+  const date = new Date(timestamp)
+  if (Number.isNaN(date.getTime())) return 'N/D'
+
+  return new Intl.DateTimeFormat('es-ES', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
+  }).format(date)
+}
+
+function normalizeZoneCacheKey(zone: string): string {
+  return zone.trim().toUpperCase()
+}
+
+function getCachedExternalElectricityZones(): Record<string, ElectricityItem[]> {
+  try {
+    const raw = sessionStorage.getItem('externalElectricityZoneCache')
+    return raw ? JSON.parse(raw) : {}
+  } catch {
+    return {}
+  }
+}
+
+function setCachedExternalElectricityZones(cache: Record<string, ElectricityItem[]>): void {
+  try {
+    sessionStorage.setItem('externalElectricityZoneCache', JSON.stringify(cache))
+  } catch {
+  }
+}
+
 function toMonthLabel(monthKey: string): string {
   const [year, month] = monthKey.split('-')
   const date = new Date(Number(year), Number(month) - 1, 1)
@@ -157,6 +189,18 @@ function SimpleLineChart({ series, currency }: { series: LineSeries[]; currency:
   const padding = { top: 20, right: 50, bottom: 46, left: 42 }
   const innerWidth = width - padding.left - padding.right
   const innerHeight = height - padding.top - padding.bottom
+  const [hoveredPoints, setHoveredPoints] = useState<Array<{
+    zone: string
+    label: string
+    color: string
+    value: number
+    x: number
+    y: number
+    timestamp: number
+  }>>([])
+  const [hoverClient, setHoverClient] = useState<{ clientX: number; clientY: number } | null>(null)
+  const [hoverX, setHoverX] = useState<number | null>(null)
+  const svgRef = useRef<SVGSVGElement | null>(null)
 
   const allPoints = series.flatMap((zoneSeries) => zoneSeries.points)
 
@@ -194,9 +238,78 @@ function SimpleLineChart({ series, currency }: { series: LineSeries[]; currency:
     return { x, label, isFirst: step === 0, isLast: step === 3 }
   })
 
+  const handleMouseMove = (event: ReactMouseEvent<SVGSVGElement>) => {
+    if (!svgRef.current) return
+
+    const rect = svgRef.current.getBoundingClientRect()
+    const mouseX = (event.clientX - rect.left) * (width / rect.width)
+    const mouseY = (event.clientY - rect.top) * (height / rect.height)
+
+    if (mouseX < padding.left || mouseX > width - padding.right || mouseY < padding.top || mouseY > height - padding.bottom) {
+      setHoveredPoints([])
+      setHoverClient(null)
+      setHoverX(null)
+      return
+    }
+
+    const timestampAtMouse = minTimestamp + ((mouseX - padding.left) / innerWidth) * timestampSpan
+    let minDistance = Infinity
+    let targetTimestamp: number | null = null
+    for (const zoneSeries of series) {
+      for (const point of zoneSeries.points) {
+        const distance = Math.abs(point.timestamp - timestampAtMouse)
+        if (distance < minDistance) {
+          minDistance = distance
+          targetTimestamp = point.timestamp
+        }
+      }
+    }
+
+    if (targetTimestamp == null) {
+      setHoveredPoints([])
+      setHoverClient(null)
+      setHoverX(null)
+      return
+    }
+
+    // Enceuntra el punto más cercano para una fecha
+    const pointsForTimestamp: Array<{ zone: string; label: string; color: string; value: number; timestamp: number; x: number; y: number }> = []
+    for (const zoneSeries of series) {
+      let best: { point: any; dist: number } | null = null
+      for (const point of zoneSeries.points) {
+        const dist = Math.abs(point.timestamp - targetTimestamp!)
+        if (!best || dist < best.dist) best = { point, dist }
+      }
+      if (best && best.point) {
+        const p = best.point
+        pointsForTimestamp.push({
+          zone: zoneSeries.zone,
+          label: zoneSeries.label,
+          color: zoneSeries.color,
+          value: p.value,
+          timestamp: p.timestamp,
+          x: xFromTimestamp(p.timestamp),
+          y: padding.top + ((maxValue - p.value) / valueSpan) * innerHeight,
+        })
+      }
+    }
+
+    setHoveredPoints(pointsForTimestamp)
+    setHoverClient({ clientX: event.clientX, clientY: event.clientY })
+    setHoverX(xFromTimestamp(targetTimestamp))
+  }
+
   return (
-    <>
-      <svg className="electricity-chart" viewBox={`0 0 ${width} ${height}`} aria-label="Evolución del precio por fecha">
+    <div style={{ position: 'relative' }}>
+      <svg
+        ref={svgRef}
+        className="electricity-chart"
+        viewBox={`0 0 ${width} ${height}`}
+        aria-label="Evolución del precio por fecha"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={() => { setHoveredPoints([]); setHoverClient(null); setHoverX(null); }}
+        style={{ display: 'block', cursor: 'default' }}
+      >
         {yLabels.map((tick) => (
           <g key={`y-${tick.y}`}>
             <line x1={padding.left} y1={tick.y} x2={width - padding.right} y2={tick.y} className="electricity-chart__grid" />
@@ -225,6 +338,13 @@ function SimpleLineChart({ series, currency }: { series: LineSeries[]; currency:
           )
         })}
 
+        {hoverX != null && (
+          <line x1={hoverX} y1={padding.top} x2={hoverX} y2={height - padding.bottom} stroke="rgba(100, 100, 100, 0.3)" strokeWidth="2" strokeDasharray="4,4" />
+        )}
+        {hoveredPoints.map((hp) => (
+          <circle key={`hp-${hp.zone}`} cx={hp.x} cy={hp.y} r="5" fill={hp.color} />
+        ))}
+
         {xTicks.map((tick) => {
           const anchor = tick.isFirst ? 'start' : tick.isLast ? 'end' : 'middle'
           return (
@@ -242,7 +362,56 @@ function SimpleLineChart({ series, currency }: { series: LineSeries[]; currency:
         >
           {`${currency}/MWh`}
         </text>
+        <rect x={padding.left} y={padding.top} width={innerWidth} height={innerHeight} fill="transparent" />
       </svg>
+
+      {hoverClient && hoveredPoints.length > 0 && (
+        <>
+          {(() => {
+            const sideAssignment = hoveredPoints.map((_, i) => (i % 2 === 0 ? 'right' : 'left'))
+            const leftIndices = sideAssignment.map((s, i) => (s === 'left' ? i : -1)).filter((i) => i !== -1)
+            const rightIndices = sideAssignment.map((s, i) => (s === 'right' ? i : -1)).filter((i) => i !== -1)
+
+            const baseXRight = 14
+            const baseXLeft = -110 
+            const baseY = -42
+            const verticalSpacing = 60
+
+            return hoveredPoints.map((hp, idx) => {
+              const side = sideAssignment[idx]
+              const order = side === 'right' ? rightIndices.indexOf(idx) : leftIndices.indexOf(idx)
+              const offX = side === 'right' ? baseXRight : baseXLeft
+              const offY = baseY + order * verticalSpacing
+
+              return (
+                <div
+                  key={`tip-${hp.zone}`}
+                  style={{
+                    position: 'fixed',
+                    left: `${hoverClient.clientX + offX}px`,
+                    top: `${hoverClient.clientY + offY}px`,
+                    background: 'rgba(0,0,0,0.88)',
+                    color: 'white',
+                    padding: '6px 10px',
+                    borderRadius: 6,
+                    fontSize: 13,
+                    pointerEvents: 'none',
+                    zIndex: 10,
+                    whiteSpace: 'nowrap',
+                    boxShadow: '0 4px 14px rgba(0,0,0,0.35)',
+                  }}
+                >
+                  <div style={{ fontWeight: 700, marginBottom: 4 }}>{hp.label}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{ fontVariantNumeric: 'tabular-nums' }}>{hp.value.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                    <div style={{ fontSize: 12, opacity: 0.85 }}>{formatTooltipDate(hp.timestamp)}</div>
+                  </div>
+                </div>
+              )
+            })
+          })()}
+        </>
+      )}
 
       <div className="electricity-line-legend" aria-label="Leyenda de zonas en la gráfica histórica">
         {series.map((zoneSeries) => (
@@ -252,7 +421,7 @@ function SimpleLineChart({ series, currency }: { series: LineSeries[]; currency:
           </div>
         ))}
       </div>
-    </>
+    </div>
   )
 }
 
@@ -384,7 +553,6 @@ function SimpleBarChart({ data, currency }: { data: BarChartData; currency: Disp
 }
 
 export function ElectricityPage() {
-  // Ref para el menú y el botón del selector de moneda
   const currencyMenuRef = useRef<HTMLDivElement | null>(null)
   const currencyButtonRef = useRef<HTMLButtonElement | null>(null)
   const [items, setItems] = useState<ElectricityItem[]>([])
@@ -399,6 +567,7 @@ export function ElectricityPage() {
   const [persistedZones, setPersistedZones] = useState<string[]>([])
   const [directSearchZones, setDirectSearchZones] = useState<string[]>([])
   const [directZoneInput, setDirectZoneInput] = useState('')
+  const [isDirectZoneSearchOpen, setIsDirectZoneSearchOpen] = useState(false)
   const [isDirectZoneLoading, setIsDirectZoneLoading] = useState(false)
   const [directZoneError, setDirectZoneError] = useState<string | null>(null)
   const [selectedCurrency, setSelectedCurrency] = useState<DisplayCurrency>('EUR')
@@ -426,7 +595,7 @@ export function ElectricityPage() {
   const [isCurrencyLoading, setIsCurrencyLoading] = useState(false)
   const [currencyError, setCurrencyError] = useState<string | null>(null)
   const [currencyRate, setCurrencyRate] = useState(1)
-  const externalZoneCacheRef = useRef<Record<string, ElectricityItem[]>>({})
+  const [externalZoneCache, setExternalZoneCache] = useState<Record<string, ElectricityItem[]>>(() => getCachedExternalElectricityZones())
   const currencyRateCacheRef = useRef<Partial<Record<DisplayCurrency, number>>>({ EUR: 1 })
 
   const ITEMS_PER_PAGE = 10
@@ -544,6 +713,10 @@ export function ElectricityPage() {
     return value * currencyRate
   }
 
+  useEffect(() => {
+    setCachedExternalElectricityZones(externalZoneCache)
+  }, [externalZoneCache])
+
   const isExternalZoneSelected = Boolean(selectedChartZone) && !persistedZonesSet.has(selectedChartZone)
 
   const selectableChartZones = useMemo(() => {
@@ -621,31 +794,32 @@ export function ElectricityPage() {
     return byZone.sort((left, right) => left.precioMwh - right.precioMwh)
   }, [latestByZone])
 
-  const externalLatestRow = useMemo(() => {
-    if (!isExternalZoneSelected || !selectedChartZone) {
-      return null
-    }
+  const externalZoneSet = useMemo(() => {
+    return new Set(Object.keys(externalZoneCache).map((zone) => normalizeZoneCacheKey(zone)))
+  }, [externalZoneCache])
 
-    const zoneRows = chartDataByZone[selectedChartZone] ?? []
-    if (zoneRows.length === 0) {
-      return null
-    }
+  const externalLatestRows = useMemo(() => {
+    return Object.entries(externalZoneCache)
+      .map(([, zoneRows]) => {
+        const latest = [...zoneRows].sort((a, b) => toTimestamp(b) - toTimestamp(a))[0] ?? null
+        if (!latest) {
+          return null
+        }
 
-    const latest = [...zoneRows].sort((a, b) => toTimestamp(b) - toTimestamp(a))[0] ?? null
-    if (!latest) {
-      return null
-    }
-
-    return {
-      ...latest,
-      precioMwh: convertToSelectedCurrency(latest.precioMwh),
-    }
-  }, [isExternalZoneSelected, selectedChartZone, chartDataByZone, currencyRate])
+        return {
+          ...latest,
+          precioMwh: convertToSelectedCurrency(latest.precioMwh),
+        }
+      })
+      .filter((row): row is ElectricityItem => row !== null)
+  }, [externalZoneCache, currencyRate])
 
   const filteredLatestRows = useMemo(() => {
     const term = searchTerm.trim().toLowerCase()
+    const mergedRows = [...externalLatestRows, ...latestRows]
+    const uniqueRows = Array.from(new Map(mergedRows.map((row) => [normalizeZoneCacheKey(row.zona), row])).values())
 
-    const baseRows = latestRows.filter((row) => {
+    return uniqueRows.filter((row) => {
       const label = zoneLabel(row.zona).toLowerCase()
 
       if (term && !label.includes(term) && !row.zona.toLowerCase().includes(term)) {
@@ -654,27 +828,7 @@ export function ElectricityPage() {
 
       return true
     })
-
-    if (!externalLatestRow) {
-      return baseRows
-    }
-
-    const externalLabel = zoneLabel(externalLatestRow.zona).toLowerCase()
-    const matchesTerm = !term
-      || externalLabel.includes(term)
-      || externalLatestRow.zona.toLowerCase().includes(term)
-
-    if (!matchesTerm) {
-      return baseRows
-    }
-
-    const alreadyIncluded = baseRows.some((row) => row.zona === externalLatestRow.zona)
-    if (alreadyIncluded) {
-      return baseRows
-    }
-
-    return [externalLatestRow, ...baseRows]
-  }, [latestRows, searchTerm, externalLatestRow])
+  }, [latestRows, externalLatestRows, searchTerm])
 
   const totalPages = Math.ceil(filteredLatestRows.length / ITEMS_PER_PAGE)
   const paginatedRows = filteredLatestRows.slice(
@@ -685,6 +839,10 @@ export function ElectricityPage() {
   useEffect(() => {
     setCurrentPage(0)
   }, [searchTerm])
+
+  useEffect(() => {
+    setCurrentPage(0)
+  }, [filteredLatestRows.length])
 
   useEffect(() => {
     if (!selectedChartZone) {
@@ -700,17 +858,26 @@ export function ElectricityPage() {
         const zonesToLoad = activeChartZones
         const entries = await Promise.all(
           zonesToLoad.map(async (zone) => {
-            const normalizedZone = zone.trim().toUpperCase()
+            const normalizedZone = normalizeZoneCacheKey(zone)
             const isPersisted = persistedZonesSet.has(zone)
 
             let data: ElectricityItem[]
             if (isPersisted) {
               data = await fetchElectricityByZoneAnddateRange(start, zone)
-            } else if (externalZoneCacheRef.current[normalizedZone]) {
-              data = externalZoneCacheRef.current[normalizedZone]
+            } else if (externalZoneCache[normalizedZone]) {
+              data = externalZoneCache[normalizedZone]
             } else {
               data = await fetchElectricityByDirectZone(zone)
-              externalZoneCacheRef.current[normalizedZone] = data
+              setExternalZoneCache((current) => {
+                if (current[normalizedZone]) {
+                  return current
+                }
+
+                return {
+                  ...current,
+                  [normalizedZone]: data,
+                }
+              })
             }
 
             const filteredData = filterItemsByRange(data, rangeDays)
@@ -734,7 +901,7 @@ export function ElectricityPage() {
     return () => {
       isCancelled = true
     }
-  }, [selectedChartZone, compareChartZones, rangeDays, activeChartZones, persistedZonesSet])
+  }, [selectedChartZone, compareChartZones, rangeDays, activeChartZones, persistedZonesSet, externalZoneCache])
 
   async function handleDirectZoneSearch(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -748,21 +915,36 @@ export function ElectricityPage() {
     setDirectZoneError(null)
 
     try {
+      const normalizedRequestedZone = normalizeZoneCacheKey(requestedZone)
+
       if (persistedZonesSet.has(requestedZone)) {
         setSelectedChartZone(requestedZone)
         return
       }
 
-      const data = externalZoneCacheRef.current[requestedZone] ?? await fetchElectricityByDirectZone(requestedZone)
+      const cached = externalZoneCache[normalizedRequestedZone] ?? externalZoneCache[requestedZone]
+      const data = cached ?? await fetchElectricityByDirectZone(requestedZone)
       if (data.length === 0) {
         throw new Error('No data')
       }
 
-      if (!externalZoneCacheRef.current[requestedZone]) {
-        externalZoneCacheRef.current[requestedZone] = data
+      if (!cached) {
+        setExternalZoneCache((current) => ({
+          ...current,
+          [normalizedRequestedZone]: data,
+        }))
       }
 
       const resolvedZone = data[0]?.zona?.trim() || requestedZone
+      const normalizedResolvedZone = normalizeZoneCacheKey(resolvedZone)
+
+      if (normalizedResolvedZone !== normalizedRequestedZone && !externalZoneCache[normalizedResolvedZone]) {
+        setExternalZoneCache((current) => ({
+          ...current,
+          [normalizedResolvedZone]: data,
+        }))
+      }
+
       setChartDataByZone((prev) => ({
         ...prev,
         [resolvedZone]: filterItemsByRange(data, rangeDays),
@@ -770,6 +952,7 @@ export function ElectricityPage() {
       setSelectedChartZone(resolvedZone)
       setCompareChartZones(Array.from({ length: COMPARISON_SLOTS }, () => ''))
       setDirectZoneInput(resolvedZone)
+      setIsDirectZoneSearchOpen(false)
     } catch {
       setDirectZoneError(`No se pudo cargar la zona ${requestedZone}.`) 
     } finally {
@@ -865,7 +1048,8 @@ export function ElectricityPage() {
       return {
         cheapest: null as ElectricityItem | null,
         mostExpensive: null as ElectricityItem | null,
-        average: 0,
+        comparisonAverage: 0,
+        comparisonCount: 0,
         selected: null as ElectricityItem | null,
       }
     }
@@ -873,18 +1057,39 @@ export function ElectricityPage() {
     const sorted = [...latestRows].sort((a, b) => a.precioMwh - b.precioMwh)
     const selectedFromLatest = selectedChartZone ? latestByZone.get(selectedChartZone) ?? null : null
     const selectedFromChartData = selectedChartZone && !selectedFromLatest
-      ? [...(chartDataByZone[selectedChartZone] ?? [])].sort((a, b) => toTimestamp(b) - toTimestamp(a))[0] ?? null
+      ? (() => {
+          const latestFromChart = [...(chartDataByZone[selectedChartZone] ?? [])].sort((a, b) => toTimestamp(b) - toTimestamp(a))[0] ?? null
+          return latestFromChart
+            ? { ...latestFromChart, precioMwh: convertToSelectedCurrency(latestFromChart.precioMwh) }
+            : null
+        })()
       : null
     const selected = selectedFromLatest ?? selectedFromChartData
-    const average = latestRows.reduce((acc, item) => acc + item.precioMwh, 0) / latestRows.length
+
+    const comparisonValues = activeChartZones
+      .map((zone) => {
+        const latestFromPersisted = latestByZone.get(zone)
+        if (latestFromPersisted) {
+          return latestFromPersisted.precioMwh
+        }
+
+        const latestFromChart = [...(chartDataByZone[zone] ?? [])].sort((a, b) => toTimestamp(b) - toTimestamp(a))[0] ?? null
+        return latestFromChart ? convertToSelectedCurrency(latestFromChart.precioMwh) : null
+      })
+      .filter((value): value is number => value !== null && Number.isFinite(value))
+
+    const comparisonAverage = comparisonValues.length > 0
+      ? comparisonValues.reduce((acc, value) => acc + value, 0) / comparisonValues.length
+      : 0
 
     return {
       cheapest: sorted[0],
       mostExpensive: sorted[sorted.length - 1],
-      average,
+      comparisonAverage,
+      comparisonCount: comparisonValues.length,
       selected,
     }
-  }, [latestByZone, selectedChartZone, chartDataByZone])
+  }, [latestByZone, selectedChartZone, chartDataByZone, activeChartZones, currencyRate])
 
   return (
     <section className="electricity-page">
@@ -902,8 +1107,13 @@ export function ElectricityPage() {
           <p>{latestValues.cheapest ? zoneLabel(latestValues.cheapest.zona) : '—'}</p>
         </article>
         <article className="card electricity-stat">
-          <span>Promedio actual</span>
-          <strong>{latestValues.average > 0 ? formatPriceMwh(latestValues.average, selectedCurrency) : 'N/D'}</strong>
+          <span>Promedio actual de zonas elegidas</span>
+          <strong>{latestValues.comparisonAverage > 0 ? formatPriceMwh(latestValues.comparisonAverage, selectedCurrency) : 'N/D'}</strong>
+          <p>
+            {latestValues.comparisonCount > 0
+              ? `${latestValues.comparisonCount} zona${latestValues.comparisonCount === 1 ? '' : 's'} en comparativa`
+              : 'Selecciona una o más zonas'}
+          </p>
         </article>
         <article className="card electricity-stat">
           <span>Más caro</span>
@@ -916,7 +1126,6 @@ export function ElectricityPage() {
           <p>{latestValues.selected ? zoneLabel(latestValues.selected.zona) : 'Selecciona una zona'}</p>
         </article>
       </section>
-
       <section className="electricity-charts">
         <article className="card electricity-chart-card">
           <header>
@@ -924,38 +1133,57 @@ export function ElectricityPage() {
               <h3>
                 <LineChart size={18} aria-hidden="true" /> Evolución histórica
               </h3>
-              <p>
-                {lineSeries.length > 1
-                  ? `Comparando ${lineSeries.length} zonas`
-                  : (selectedChartZone ? zoneLabel(selectedChartZone) : 'Selecciona una zona')}
-              </p>
 
               <div className="electricity-direct-zone-block">
-                <form className="electricity-direct-zone" onSubmit={handleDirectZoneSearch}>
-                  <label className="search-field" htmlFor="direct-zone-search">
+                <form className="electricity-direct-zone" onSubmit={handleDirectZoneSearch} autoComplete="off">
+                  <label className="search-field electricity-direct-zone__search-field" htmlFor="direct-zone-search">
                     <Search size={18} aria-hidden="true" />
-                    <input
-                      id="direct-zone-search"
-                      type="text"
-                      placeholder="¿Buscar otra zona? Ej: DE-AT-LU"
-                      list="direct-zone-hints"
-                      value={directZoneInput}
-                      onChange={(event) => setDirectZoneInput(event.target.value)}
-                      disabled={isDirectZoneLoading}
-                    />
+                    <div className="electricity-direct-zone__input-wrap">
+                      <input
+                        id="direct-zone-search"
+                        className="electricity-direct-zone__input"
+                        type="text"
+                        placeholder="¿Buscar otra zona? Ej: DE-AT-LU"
+                        autoComplete="off"
+                        value={directZoneInput}
+                        onChange={(event) => setDirectZoneInput(event.target.value)}
+                        onFocus={() => setIsDirectZoneSearchOpen(true)}
+                        onBlur={() => setTimeout(() => setIsDirectZoneSearchOpen(false), 120)}
+                        aria-label="Buscar zona externa"
+                        aria-autocomplete="list"
+                        aria-haspopup="listbox"
+                        aria-controls="direct-zone-search-listbox"
+                        disabled={isDirectZoneLoading}
+                      />
+                      {isDirectZoneSearchOpen && filteredDirectZoneHints.length > 0 ? (
+                        <ul
+                          id="direct-zone-search-listbox"
+                          role="listbox"
+                          className="electricity-direct-zone__dropdown-list"
+                        >
+                          {filteredDirectZoneHints.map((zone) => (
+                            <li
+                              key={zone}
+                              role="option"
+                              tabIndex={-1}
+                              onMouseDown={() => {
+                                setDirectZoneInput(zone)
+                                setIsDirectZoneSearchOpen(false)
+                              }}
+                            >
+                              <div className="electricity-direct-zone__dropdown-code">{zone}</div>
+                              <div className="electricity-direct-zone__dropdown-label">{zoneLabel(zone)}</div>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : null}
+                    </div>
                   </label>
                   <button type="submit" disabled={isDirectZoneLoading || !directZoneInput.trim()}>
                     {isDirectZoneLoading ? <Loader2 size={14} className="electricity-spinner" aria-hidden="true" /> : null}
                     <span>{isDirectZoneLoading ? 'Buscando...' : 'Buscar zona'}</span>
                   </button>
                 </form>
-                <datalist id="direct-zone-hints">
-                  {filteredDirectZoneHints.map((zone) => (
-                    <option key={`hint-${zone}`} value={zone}>
-                      {zoneLabel(zone)}
-                    </option>
-                  ))}
-                </datalist>
                 <p className="electricity-direct-zone__hint">
                   Las zonas que busques aquí se obtienen por llamada directa a nuestros proveedores, estos datos pueden tardar en cargar.
                 </p>
@@ -1118,9 +1346,7 @@ export function ElectricityPage() {
 
       <section className="card electricity-table-card">
         <header>
-          <h3>
-            <Zap size={18} aria-hidden="true" /> Precio más reciente por zona
-          </h3>
+          <h3 className="currencies-page__section-title"> Precios más recientes por zona</h3>
           <p>
             {filteredLatestRows.length} resultado{filteredLatestRows.length === 1 ? '' : 's'}
           </p>
@@ -1134,12 +1360,18 @@ export function ElectricityPage() {
               {paginatedRows.map((row) => (
                 <article
                   key={row.zona}
-                  className={`electricity-row ${externalLatestRow && row.zona === externalLatestRow.zona ? 'electricity-row--external' : ''}`}
+                  className={`electricity-row ${externalZoneSet.has(normalizeZoneCacheKey(row.zona)) ? 'electricity-row--external' : ''}`}
                 >
                   <div>
                     <strong>{zoneLabel(row.zona)}</strong>
-                    {externalLatestRow && row.zona === externalLatestRow.zona ? <em className="electricity-row__tag">Zona externa</em> : null}
-                    <span>{toShortDateLabel(row.fecha)}</span>
+                    {externalZoneSet.has(normalizeZoneCacheKey(row.zona)) ? (
+                      <div className="electricity-row__meta">
+                        <em className="electricity-row__tag" style={{marginLeft: -0.5}}>Zona obtenida de terceros</em>
+                        <span>{toShortDateLabel(row.fecha)}</span>
+                      </div>
+                    ) : (
+                      <span>{toShortDateLabel(row.fecha)}</span>
+                    )}
                   </div>
                   <p>{formatPriceMwh(row.precioMwh, selectedCurrency)}</p>
                 </article>
