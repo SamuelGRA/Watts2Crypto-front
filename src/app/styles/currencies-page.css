@@ -1,0 +1,279 @@
+
+.currencies-page__selector-row {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.currencies-page__selector-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 100px;
+}
+
+.currencies-page__selector-label {
+  font-size: 13px;
+  color: var(--muted-foreground);
+  margin-bottom: 6px;
+  text-align: center;
+  width: 100%;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.currencies-page__selector-arrow {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  margin-top: 0.5%;
+}
+/* Scrollbar para dropdown de búsqueda de monedas */
+.currencies-page__dropdown-list {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--primary) 42%, #11253e 58%) color-mix(in srgb, var(--muted) 82%, #050915 18%);
+  list-style: none;
+  padding: 0;
+}
+
+.currencies-page__dropdown-list::-webkit-scrollbar {
+  width: 10px;
+}
+.currencies-page__dropdown-list::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--muted) 82%, #050915 18%);
+  border-radius: 999px;
+}
+.currencies-page__dropdown-list::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--primary) 42%, #11253e 58%);
+  border-radius: 999px;
+  border: 2px solid color-mix(in srgb, var(--muted) 82%, #050915 18%);
+}
+.currencies-page__dropdown-list::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--primary) 58%, #11253e 42%);
+}
+.currencies-page__toggle {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.currencies-page__toggle button {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--muted);
+  color: var(--foreground);
+  padding: 0.32rem 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.currencies-page__toggle button.is-active {
+  background: var(--primary);
+  color: var(--primary-foreground, #fff);
+}
+
+.currencies-page__toggle button:hover:not(.is-active) {
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.currencies-page__select {
+  margin: 1.5rem 0 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.currencies-page__select select {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--muted);
+  color: var(--foreground);
+  padding: 0.32rem 0.7rem;
+  font-size: 1rem;
+}
+
+.currencies-page__chart {
+  margin-bottom: 2.2rem;
+}
+
+.currencies-page__search {
+  margin: 1.5rem 0;
+}
+
+.currencies-page__center-row {
+  display: flex;
+  justify-content: center;
+}
+
+.currencies-page__panel {
+  padding: 12px 14px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+}
+
+.currencies-page__section-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.currencies-page__section-title {
+  color: var(--brand-title);
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.currencies-page__search-input {
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--muted);
+  color: var(--foreground);
+  font-size: 15px;
+  margin-bottom: 2px;
+  max-width: 340px;
+}
+
+.currencies-page__cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+@media (max-width: 1200px) {
+  .currencies-page__cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .currencies-page__cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.currencies-page__rate-card {
+  border-radius: 14px;
+  padding: 18px;
+  background: var(--muted);
+}
+
+.currencies-page__rate-card--highlighted {
+  background: color-mix(in srgb, var(--primary) 9%, var(--muted) 91%);
+  border: 2px solid color-mix(in srgb, var(--primary) 45%, var(--border) 55%);
+}
+
+.currencies-page__rate-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.currencies-page__rate-card-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.currencies-page__rate-card-code {
+  font-weight: 700;
+  color: var(--foreground);
+  font-size: 18px;
+}
+
+.currencies-page__rate-card-name {
+  font-size: 13px;
+  color: var(--muted-foreground);
+}
+
+.currencies-page__rate-card-badge {
+  font-size: 12px;
+  color: var(--success);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.currencies-page__rate-card-price {
+  font-weight: 700;
+  color: var(--brand-title);
+  font-size: 20px;
+  text-align: right;
+}
+
+.currencies-page__rate-card-unit {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  text-align: right;
+}
+
+.currencies-page__rate-card-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.currencies-page__rate-card-stat-label {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+
+.currencies-page__chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.currencies-page__chart-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.currencies-page__chart-header-right {
+  font-weight: 500;
+  color: var(--muted-foreground);
+}
+
+.currencies-page__crypto-chart-controls {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.currencies-page__crypto-chart-controls-left {
+  flex: 1 1 auto;
+  min-height: 1px;
+}
+
+.currencies-page__crypto-chart-controls-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 760px) {
+  .currencies-page__crypto-chart-controls {
+    flex-direction: column;
+  }
+
+  .currencies-page__crypto-chart-controls-right {
+    width: 100%;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+}

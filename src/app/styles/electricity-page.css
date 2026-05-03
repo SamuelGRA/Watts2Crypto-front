@@ -196,6 +196,69 @@
   gap: 0.45rem;
 }
 
+.electricity-direct-zone__search-field {
+  align-items: center;
+}
+
+.electricity-direct-zone__input-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 280px;
+  max-width: 420px;
+}
+
+.electricity-direct-zone__input-wrap .electricity-direct-zone__input {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--foreground);
+  outline: none;
+  padding: 0;
+}
+
+.electricity-direct-zone__dropdown-list {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 20;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  max-height: 220px;
+  overflow-y: auto;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: 0 10px 22px color-mix(in srgb, black 50%, transparent);
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--primary) 42%, #11253e 58%) color-mix(in srgb, var(--muted) 82%, #050915 18%);
+}
+
+.electricity-direct-zone__dropdown-list li {
+  padding: 0.4rem 0.7rem;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.electricity-direct-zone__dropdown-list li:last-child {
+  border-bottom: 0;
+}
+
+.electricity-direct-zone__dropdown-list li:hover {
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.electricity-direct-zone__dropdown-code {
+  font-weight: 700;
+  color: var(--brand-title);
+}
+
+.electricity-direct-zone__dropdown-label {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+
 .electricity-direct-zone button {
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -256,7 +319,8 @@
   position: relative;
 }
 
-.electricity-chart-card select {
+.electricity-chart-card select,
+.electricity-chart-card .electricity-select-wrap input {
   width: 100%;
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -269,6 +333,10 @@
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--primary) 42%, #11253e 58%)
     color-mix(in srgb, var(--muted) 82%, #050915 18%);
+}
+
+.electricity-chart-card .electricity-select-wrap input {
+  padding-right: 2rem;
 }
 
 .electricity-chart-card select::-webkit-scrollbar {
@@ -343,7 +411,7 @@
 
 .electricity-chart__unit-label {
   fill: color-mix(in srgb, var(--muted-foreground) 84%, var(--foreground) 16%);
-  font-size: 11px;
+  font-size: 8px;
 }
 
 .electricity-chart__line {
@@ -437,6 +505,13 @@
 .electricity-row strong {
   display: block;
   font-size: 0.92rem;
+}
+
+.electricity-row__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.08rem;
 }
 
 .electricity-row span {
