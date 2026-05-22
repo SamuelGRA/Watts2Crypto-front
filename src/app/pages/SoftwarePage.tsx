@@ -8,18 +8,31 @@ function formatCommission(value: number): string {
   return `${Number(value).toFixed(2)}%`
 }
 
-function formatSoftwareTypeLabel(value: string): string {
-  const normalized = value.trim().toUpperCase()
+function formatCommissionDetailLabel(moneda: string, comision: number): string {
+  return `${moneda} - ${formatCommission(comision)}`
+}
 
-  if (normalized === 'MINERO') {
-    return 'Minero'
+function calculateAverageCommission(detalles: Array<{ moneda: string; algoritmo: string; comision: number }>): number | null {
+  if (!detalles || detalles.length === 0) {
+    return null
   }
 
-  if (normalized === 'PLATAFORMA') {
-    return 'Plataforma'
+  const sum = detalles.reduce((acc, detail) => acc + detail.comision, 0)
+  return sum / detalles.length
+}
+
+function getCommissionByCurrency(
+  moneda: string,
+  detalles: Array<{ moneda: string; algoritmo: string; comision: number }>,
+): number | null {
+  const matchingDetails = detalles.filter((detail) => detail.moneda === moneda)
+
+  if (matchingDetails.length === 0) {
+    return null
   }
 
-  return normalized.charAt(0) + normalized.slice(1).toLowerCase()
+  const sum = matchingDetails.reduce((acc, detail) => acc + detail.comision, 0)
+  return sum / matchingDetails.length
 }
 
 function formatSystemLabel(value: string): string {
@@ -120,6 +133,10 @@ export function SoftwarePage() {
 
   const hasActiveFilters =
     searchTerm.trim().length > 0 || selectedHardware.length > 0 || selectedSystems.length > 0
+
+  const getCurrencyOptionsForItem = (item: SoftwareItem): string[] => {
+    return Array.from(new Set((item.detallesAlgoritmoMoneda ?? []).map((detail) => detail.moneda))).sort()
+  }
 
   const toggleHardware = (hardware: string) => {
     setSelectedHardware((prev) =>
@@ -226,59 +243,49 @@ export function SoftwarePage() {
               <article key={item.nombre} className="card software-card">
                 <header className="software-card__header">
                   <div>
-                    <h3>{item.nombre}</h3>
-                    <p className="software-card__type">
-                      <span
-                        className="software-term-tooltip"
-                        tabIndex={0}
-                        role="button"
-                        aria-label="Ver diferencia entre Minero y Plataforma"
-                      >
-                        {formatSoftwareTypeLabel(item.tipoSoftware)}
-                        <span className="software-term-tooltip__panel" role="tooltip">
-                          <strong>Minero:</strong> Ejecuta la minería directamente en tu hardware.
-                          <strong>Plataforma:</strong> Gestiona y simplifica la operación de minería coordinando a uno o varios mineros.
-                        </span>
-                      </span>
-                    </p>
+                    <h3 style={{fontSize: 22}}>{item.nombre}</h3>
                   </div>
                   <div className="software-card__commission">
-                    <strong>{formatCommission(item.comision)}</strong>
-                    <span>Comisión</span>
+                    <strong style={{fontSize: 24}}>
+                      {item.detallesAlgoritmoMoneda.length > 0
+                        ? formatCommission(calculateAverageCommission(item.detallesAlgoritmoMoneda) ?? item.comision)
+                        : formatCommission(item.comision)}
+                    </strong>
+                    <span>{item.detallesAlgoritmoMoneda.length > 0 ? 'Comisión media' : 'Comisión'}</span>
                   </div>
                 </header>
 
-                <div className="software-card__section">
-                  <span>Hardware compatible</span>
-                  <div className="software-tag-group">
-                    {(item.hardwareUsable ?? []).map((hardware) => (
-                      <span key={`${item.nombre}-hw-${hardware}`} className="software-tag">
-                        {hardware}
-                      </span>
-                    ))}
+                <div className="software-card__stats">
+                  <div className="software-card__stat">
+                    <span>Hardware compatible</span>
+                    <strong>
+                      {(item.hardwareUsable ?? []).length > 0 ? item.hardwareUsable.join(', ') : 'N/D'}
+                    </strong>
                   </div>
-                </div>
 
-                <div className="software-card__section">
-                  <span>Sistemas operativos compatibles</span>
-                  <div className="software-tag-group">
-                    {(item.sistemas ?? []).map((sistema) => (
-                      <span key={`${item.nombre}-os-${sistema}`} className="software-tag">
-                        {formatSystemLabel(sistema)}
-                      </span>
-                    ))}
+                  <div className="software-card__stat">
+                    <span>Sistemas operativos compatibles</span>
+                    <strong>
+                      {(item.sistemas ?? []).length > 0
+                        ? item.sistemas.map(formatSystemLabel).join(', ')
+                        : 'N/D'}
+                    </strong>
                   </div>
                 </div>
 
                 <div className="software-card__algorithms-block">
-                  <span>Algoritmos</span>
+                  <span>Monedas soportadas</span>
                   <div className="software-algorithm-group">
-                    {(item.algoritmos ?? []).length > 0 ? (
-                      (item.algoritmos ?? []).map((algoritmo) => (
-                        <span key={`${item.nombre}-algo-${algoritmo}`} className="software-algorithm-tag">
-                          {algoritmo}
-                        </span>
-                      ))
+                    {getCurrencyOptionsForItem(item).length > 0 ? (
+                      getCurrencyOptionsForItem(item).map((moneda) => {
+                        const commission = getCommissionByCurrency(moneda, item.detallesAlgoritmoMoneda)
+
+                        return (
+                          <span key={`${item.nombre}-moneda-${moneda}`} className="software-algorithm-tag">
+                            {commission !== null ? formatCommissionDetailLabel(moneda, commission) : moneda}
+                          </span>
+                        )
+                      })
                     ) : (
                       <span className="software-algorithm-tag">N/D</span>
                     )}

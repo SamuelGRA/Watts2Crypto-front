@@ -50,6 +50,24 @@ const PAYMENT_SCHEMES_INFO = [
     variance: 'Muy alta',
     idealFor: 'Hasrate muy alto o perfiles que aceptan alta volatilidad',
   },
+  {
+    id: 'PROP',
+    title: 'PROP',
+    description:
+      'Reparte las recompensas según las shares aportadas durante la ronda activa.',
+    risk: 'Alto',
+    variance: 'Alta',
+    idealFor: 'Mineros que quieren pago proporcional por ronda',
+  },
+  {
+    id: 'PPLNSBF',
+    title: 'PPLNSBF',
+    description:
+      'Variante de PPLNS con una fórmula específica impuesta por la pool para el reparto.',
+    risk: 'Medio',
+    variance: 'Media',
+    idealFor: 'Mineros que aceptan reglas particulares de reparto',
+  },
 ]
 
 function formatCommission(value: number): string {
@@ -85,8 +103,16 @@ function formatPaymentSchemeLabel(value: string): string {
     return 'PPLNS'
   }
 
+  if (normalized === 'PPLNSBF') {
+    return 'PPLNSBF'
+  }
+
   if (normalized === 'FPPS') {
     return 'FPPS'
+  }
+
+  if (normalized === 'PROP') {
+    return 'PROP'
   }
 
   if (normalized === 'PPS') {
@@ -108,13 +134,23 @@ function formatRegions(regiones: string[]): string {
   return regiones.map(formatRegionLabel).join(', ')
 }
 
-function formatPoolSubtitle(item: PoolItem): string {
-  if (!item.algoritmos || item.algoritmos.length === 0) {
-    return 'Algoritmos: N/D'
-  }
-
-  return `Algoritmos: ${item.algoritmos.join(', ')}`
+function formatCommissionDetailLabel(moneda: string, comision: number): string {
+  return `${moneda} - ${formatCommission(comision)}`
 }
+
+function getCommissionForCurrency(currency: string, detalles: Array<{ moneda: string; comision: number }>): number | null {
+  const detail = detalles.find((d) => d.moneda === currency)
+  return detail ? detail.comision : null
+}
+
+function calculateAverageCommission(detalles: Array<{ moneda: string; comision: number }>): number | null {
+  if (!detalles || detalles.length === 0) {
+    return null
+  }
+  const sum = detalles.reduce((acc, detail) => acc + detail.comision, 0)
+  return sum / detalles.length
+}
+
 
 export function PoolsPage() {
   const [poolItems, setPoolItems] = useState<PoolItem[]>([])
@@ -368,12 +404,15 @@ export function PoolsPage() {
               <article key={item.nombre} className="card software-card pool-card">
                 <header className="software-card__header pool-card__header">
                   <div>
-                    <h3>{item.nombre}</h3>
-                    <p className="pool-card__subtitle">{formatPoolSubtitle(item)}</p>
+                    <h3 style={{fontSize: 22}}>{item.nombre}</h3>
                   </div>
                   <div className="software-card__commission pool-card__commission">
-                    <strong>{formatCommission(item.comision)}</strong>
-                    <span>Comisión</span>
+                    <strong>
+                      {item.detallesMonedaComision.length > 0
+                        ? formatCommission(calculateAverageCommission(item.detallesMonedaComision) ?? 0)
+                        : formatCommission(item.comision)}
+                    </strong>
+                    <span>{item.detallesMonedaComision.length > 0 ? 'Comisión media' : 'Comisión'}</span>
                   </div>
                 </header>
 
@@ -397,11 +436,14 @@ export function PoolsPage() {
                   <span>Monedas soportadas</span>
                   <div className="software-tag-group">
                     {(item.monedas ?? []).length > 0 ? (
-                      (item.monedas ?? []).map((currency) => (
-                        <span key={`${item.nombre}-currency-${currency}`} className="software-algorithm-tag">
-                          {currency}
-                        </span>
-                      ))
+                      (item.monedas ?? []).map((currency) => {
+                        const commission = getCommissionForCurrency(currency, item.detallesMonedaComision)
+                        return (
+                          <span key={`${item.nombre}-currency-${currency}`} className="software-algorithm-tag pool-card__currency-tag">
+                            {commission !== null ? formatCommissionDetailLabel(currency, commission) : currency}
+                          </span>
+                        )
+                      })
                     ) : (
                       <span className="software-algorithm-tag">N/D</span>
                     )}

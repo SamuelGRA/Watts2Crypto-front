@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { ChevronRight, Filter, Search, TrendingUp, X, Info } from 'lucide-react'
 import '../styles/hardware-page.css'
 import '../styles/info-note.css'
-import { fetchHardwareByType } from '../../api/hardwareApi'
+import { fetchHardwareByType, formatHashrate, formatPower } from '../../api/hardwareApi'
 import type { HardwareItem, HardwareType } from '../../types/hardware'
 import { InfoNote } from '../components/InfoNote'
 
@@ -266,22 +266,22 @@ export function HardwarePage() {
                   <>
                     <div>
                       <span>Hashrate</span>
-                      <strong>{item.hashrate}</strong>
+                      <strong>{formatHashrate(item.hashrateValue, item.type)}</strong>
                     </div>
                     <div>
                       <span>Consumo</span>
-                      <strong>{item.power}</strong>
+                      <strong>{formatPower(item.powerValue)}</strong>
                     </div>
                   </>
                 ) : (
                   <>
                     <div>
                       <span>Hashrate promedio</span>
-                      <strong>{item.hashrate}</strong>
+                      <strong>{formatHashrate(item.hashrateValue, item.type)}</strong>
                     </div>
                     <div>
                       <span>Consumo promedio</span>
-                      <strong>{item.power}</strong>
+                      <strong>{formatPower(item.powerValue)}</strong>
                     </div>
                   </>
                 )}
@@ -360,8 +360,8 @@ export function HardwarePage() {
                     className={algorithmItem.name === algorithmModalHardware.algorithm ? 'algorithm-list__item--best' : ''}
                   >
                     <strong>{algorithmItem.name}</strong>
-                    <span>Hashrate: {algorithmItem.hashrate}</span>
-                    <span>Consumo: {algorithmItem.power}</span>
+                    <span>Hashrate: {formatHashrate(algorithmItem.hashrateValue, algorithmModalHardware.type)}</span>
+                    <span>Consumo: {formatPower(algorithmItem.powerValue)}</span>
                   </li>
                 ))}
               </ul>

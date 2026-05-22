@@ -132,13 +132,14 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.9rem;
-  align-items: start;
+  align-items: stretch;
 }
 
 .software-card {
   padding: 1rem;
   display: grid;
   gap: 0.85rem;
+  align-content: start;
 }
 
 .software-card__header {
@@ -190,6 +191,7 @@
 
 .pool-card {
   gap: 1rem;
+  align-content: start;
 }
 
 .pool-card__header {
@@ -239,6 +241,40 @@
 
 .pool-card__chip-block {
   gap: 0.55rem;
+}
+
+.pool-card__commission-details {
+  border-top: 1px solid var(--border);
+  padding-top: 0.7rem;
+}
+
+.pool-card__commission-details summary {
+  cursor: pointer;
+  list-style: none;
+  color: var(--muted-foreground);
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 0.55rem;
+}
+
+.pool-card__commission-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.pool-card__commission-details[open] summary {
+  color: var(--brand-title);
+}
+
+.pool-card__commission-tags {
+  padding-top: 0.1rem;
+}
+
+.pool-card__commission-tag {
+  background: color-mix(in srgb, var(--primary) 10%, var(--muted) 90%);
+}
+
+html[data-theme='light'] .pool-card__commission-tag {
+  background: color-mix(in srgb, var(--primary) 8%, #ffffff 92%);
 }
 
 .software-algorithm-tag {
