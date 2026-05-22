@@ -2,14 +2,16 @@ export type HardwareType = 'gpu' | 'cpu' | 'asic'
 
 export type HardwareAlgorithm = {
   name: string
-  hashrate: string
-  power: string
+  hashrateValue: number
+  powerValue: number
 }
 
 export type HardwareItem = {
+  type: HardwareType
+  rawName: string
   name: string
-  hashrate: string
+  hashrateValue: number
   algorithm: string
-  power: string
+  powerValue: number
   algorithms: HardwareAlgorithm[]
 }

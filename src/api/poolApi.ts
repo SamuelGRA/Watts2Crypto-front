@@ -1,5 +1,5 @@
 import { getJson } from './httpClient'
-import type { PoolItem } from '../types/pool'
+import type { PoolItem, PoolMonedaComisionItem } from '../types/pool'
 
 type RawPool = {
 	nombre?: string
@@ -8,6 +8,10 @@ type RawPool = {
 	regiones?: string[]
 	monedas?: string[]
 	algoritmos?: string[]
+	detallesMonedaComision?: Array<{
+		moneda?: string
+		comision?: number
+	}>
 }
 
 function normalizeList(values: string[] | string | null | undefined): string[] {
@@ -22,18 +26,44 @@ function normalizeList(values: string[] | string | null | undefined): string[] {
 		.filter((value): value is string => Boolean(value))
 }
 
+function toPoolMonedaComisionItems(
+	values: RawPool['detallesMonedaComision'] | null | undefined,
+): PoolMonedaComisionItem[] {
+	if (!values || values.length === 0) {
+		return []
+	}
+
+	return values
+		.map((value) => ({
+			moneda: value.moneda?.trim() || 'Sin moneda',
+			comision: value.comision ?? 0,
+		}))
+		.filter((value) => value.moneda !== 'Sin moneda')
+}
+
 function toPoolItem(raw: RawPool): PoolItem {
+	const detallesMonedaComision = toPoolMonedaComisionItems(raw.detallesMonedaComision)
+	const monedas = raw.monedas && raw.monedas.length > 0
+		? normalizeList(raw.monedas)
+		: Array.from(new Set(detallesMonedaComision.map((item) => item.moneda)))
+	const comision = raw.comision ?? detallesMonedaComision[0]?.comision ?? 0
+
 	return {
 		nombre: raw.nombre?.trim() || 'Sin nombre',
-		comision: raw.comision ?? 0,
 		esquemaDePago: normalizeList(raw.esquemaDePago),
 		regiones: normalizeList(raw.regiones),
-		monedas: normalizeList(raw.monedas),
+		detallesMonedaComision,
+		monedas,
 		algoritmos: normalizeList(raw.algoritmos),
+		comision,
 	}
 }
 
 export async function fetchPools(): Promise<PoolItem[]> {
 	const items = await getJson<RawPool[]>('/api/pools')
 	return items.map(toPoolItem)
+}
+
+export async function fetchPoolNamesByAlgorithm(algoritmo: string): Promise<string[]> {
+	return getJson<string[]>(`/api/pools/byAlgoritmo/${encodeURIComponent(algoritmo)}`)
 }

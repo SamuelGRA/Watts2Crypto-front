@@ -112,7 +112,7 @@ const HASH_UNITS: Record<HardwareType, HashUnit[]> = {
   ],
 }
 
-function formatHashrate(value: number, type: HardwareType): string {
+export function formatHashrate(value: number, type: HardwareType): string {
   if (value == null) {
     return 'N/D'
   }
@@ -127,12 +127,12 @@ function formatHashrate(value: number, type: HardwareType): string {
   return '0 H/s'
 }
 
-function formatPower(value: number): string {
+export function formatPower(value: number): string {
   if (value == null) {
     return 'N/D'
   }
 
-  return `${value}W`
+  return `${value} W`
 }
 
 function getAlgorithms(raw: RawHardware): Record<string, RawPerformance> {
@@ -173,16 +173,16 @@ function mapAlgorithms(type: HardwareType, raw: RawHardware) {
     return [
       {
         name: CPU_DEFAULT_ALGORITHM,
-        hashrate: formatHashrate(raw.hashrateNominal, type),
-        power: formatPower(raw.consumoNominal),
+        hashrateValue: raw.hashrateNominal,
+        powerValue: raw.consumoNominal,
       },
     ]
   }
 
   return Object.entries(getAlgorithms(raw)).map(([name, performance]) => ({
     name,
-    hashrate: formatHashrate(performance.hashrate, type),
-    power: formatPower(performance.consumo),
+    hashrateValue: performance.hashrate,
+    powerValue: performance.consumo,
   }))
 }
 
@@ -192,10 +192,12 @@ function toHardwareItem(type: HardwareType, raw: RawHardware): HardwareItem {
   const algorithms = mapAlgorithms(type, raw)
 
   return {
+    type,
+    rawName: raw.nombre,
     name: withInferredBrand(raw.nombre, type),
-    hashrate: formatHashrate(rawHashrate, type),
+    hashrateValue: rawHashrate,
     algorithm: getMostProfitableAlgorithm(type, raw),
-    power: formatPower(rawPower),
+    powerValue: rawPower,
     algorithms,
   }
 }
@@ -203,4 +205,13 @@ function toHardwareItem(type: HardwareType, raw: RawHardware): HardwareItem {
 export async function fetchHardwareByType(type: HardwareType): Promise<HardwareItem[]> {
   const rawItems = await getJson<RawHardware[]>(ENDPOINT_BY_TYPE[type])
   return rawItems.map((item) => toHardwareItem(type, item))
+}
+
+export async function fetchHardwareNamesByAlgorithm(type: HardwareType, algoritmo: string): Promise<string[]> {
+  const endpoint = type === 'cpu'
+    ? `/api/cpus/byAlgoritmo/${encodeURIComponent(algoritmo)}`
+    : `${ENDPOINT_BY_TYPE[type]}/byAlgoritmo/${encodeURIComponent(algoritmo)}`
+  const names = await getJson<string[]>(endpoint)
+  
+  return names.map((n) => (typeof n === 'string' ? n : String(n)))
 }

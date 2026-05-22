@@ -137,47 +137,47 @@
 }
 
 .software-card__commission {
+  display: grid;
+  justify-items: end;
+  gap: 0.12rem;
   text-align: right;
 }
 
 .software-card__commission strong {
-  display: block;
-  color: var(--brand-title);
-  font-size: 1.1rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .software-card__commission span {
   color: var(--muted-foreground);
   font-size: 0.8rem;
+  line-height: 1.4;
 }
 
-.software-card__section {
+.software-card__stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.software-card__stat {
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 0.55rem;
+  padding: 0.7rem 0.8rem;
   background: var(--muted);
   display: grid;
-  gap: 0.45rem;
+  gap: 0.3rem;
 }
 
-.software-card__section > span {
+.software-card__stat > span {
   color: var(--muted-foreground);
-  font-size: 0.77rem;
+  font-size: 0.82rem;
 }
 
-.software-tag-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-
-.software-tag {
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 0.2rem 0.55rem;
-  font-size: 0.8rem;
-  color: var(--foreground);
-  background: color-mix(in srgb, var(--card) 50%, transparent);
+.software-card__stat > strong {
+  font-size: 1rem;
+  font-weight: 650;
+  line-height: 1.3;
 }
 
 .software-card__algorithms {
