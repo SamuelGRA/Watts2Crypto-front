@@ -299,6 +299,9 @@ function SimpleLineChart({ series, currency }: { series: LineSeries[]; currency:
     setHoverX(xFromTimestamp(targetTimestamp))
   }
 
+  const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : width
+  const tooltipMaxWidth = 250
+
   return (
     <div style={{ position: 'relative' }}>
       <svg
@@ -373,22 +376,26 @@ function SimpleLineChart({ series, currency }: { series: LineSeries[]; currency:
             const rightIndices = sideAssignment.map((s, i) => (s === 'right' ? i : -1)).filter((i) => i !== -1)
 
             const baseXRight = 14
-            const baseXLeft = -110 
+            const baseXLeft = 1
             const baseY = -42
-            const verticalSpacing = 60
+            const verticalSpacing = 72
 
             return hoveredPoints.map((hp, idx) => {
               const side = sideAssignment[idx]
               const order = side === 'right' ? rightIndices.indexOf(idx) : leftIndices.indexOf(idx)
-              const offX = side === 'right' ? baseXRight : baseXLeft
               const offY = baseY + order * verticalSpacing
+              const availableWidth = side === 'right'
+                ? viewportWidth - hoverClient.clientX - baseXRight - 18
+                : hoverClient.clientX - baseXLeft - 18
+              const maxWidth = Math.max(140, Math.min(tooltipMaxWidth, availableWidth))
 
               return (
                 <div
                   key={`tip-${hp.zone}`}
                   style={{
                     position: 'fixed',
-                    left: `${hoverClient.clientX + offX}px`,
+                    left: side === 'right' ? `${hoverClient.clientX + baseXRight}px` : 'auto',
+                    right: side === 'left' ? `${Math.max(viewportWidth - hoverClient.clientX + baseXLeft, 12)}px` : 'auto',
                     top: `${hoverClient.clientY + offY}px`,
                     background: 'rgba(0,0,0,0.88)',
                     color: 'white',
@@ -397,7 +404,11 @@ function SimpleLineChart({ series, currency }: { series: LineSeries[]; currency:
                     fontSize: 13,
                     pointerEvents: 'none',
                     zIndex: 10,
-                    whiteSpace: 'nowrap',
+                    whiteSpace: 'normal',
+                    overflowWrap: 'anywhere',
+                    wordBreak: 'break-word',
+                    maxWidth: `${maxWidth}px`,
+                    width: 'max-content',
                     boxShadow: '0 4px 14px rgba(0,0,0,0.35)',
                   }}
                 >

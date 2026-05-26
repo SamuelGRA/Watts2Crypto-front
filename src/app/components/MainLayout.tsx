@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router-dom'
 import '../styles/main-layout.css'
+import { MaintenanceBanner } from './MaintenanceBanner'
 
 const navItems = [
   { to: '/', label: 'Calculadora', icon: Calculator, end: true },
@@ -83,6 +84,7 @@ export function MainLayout() {
       </nav>
 
       <main className="container content-shell">
+        <MaintenanceBanner />
         <Outlet />
       </main>
     </div>

@@ -1,0 +1,67 @@
+.maintenance-banner {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: color-mix(in srgb, var(--background) 64%, #000 36%);
+  backdrop-filter: blur(12px);
+}
+
+.maintenance-banner__card {
+  width: min(640px, 100%);
+  padding: 1.25rem 1.4rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: start;
+  border-left: 4px solid color-mix(in srgb, var(--primary) 70%, white 30%);
+  box-shadow: 0 20px 40px rgb(0 0 0 / 28%);
+}
+
+.maintenance-banner__icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: color-mix(in srgb, var(--primary) 80%, white 20%);
+  background: color-mix(in srgb, var(--primary) 16%, transparent);
+}
+
+.maintenance-banner__content {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.maintenance-banner__content h2 {
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+  color: var(--brand-title);
+  letter-spacing: -0.02em;
+}
+
+.maintenance-banner__content p {
+  color: var(--muted-foreground);
+  line-height: 1.55;
+}
+
+.maintenance-banner__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  color: var(--foreground);
+  font-size: 0.92rem;
+}
+
+.maintenance-banner__spin {
+  animation: maintenance-spin 1.1s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes maintenance-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
