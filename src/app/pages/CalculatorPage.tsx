@@ -1106,11 +1106,7 @@ export function CalculatorPage() {
                   </button>
                 ))}
               </div>
-              {/*  Solo quedaría la pantalla de guía, y en cuanto al despliegue, probar a subir lo del
-              backend y levantar el web service en render, a ver si funciona la que me ha liado el 
-              copilot, recuerda que hay que meter la url base de render en una var de github y el 
-              refresh token en un secret, además tendrás que configurar las variables de entorno de
-              render para que funcione el rollo este */}
+              {/*  Solo quedaría la pantalla de guía */}
               <div className="calculator-page__hint-field">
                 <input
                   type="text"

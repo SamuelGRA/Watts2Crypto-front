@@ -329,27 +329,32 @@ html[data-theme='light'] .calculator-page__qty-button:hover {
 }
 
 .number-input {
-	position: relative;
 	display: grid;
+	grid-template-columns: 1fr;
 }
 
 .number-input__field {
+	grid-column: 1;
+	grid-row: 1;
 	padding-right: 2.2rem;
 }
 
 .number-input__controls {
-	position: absolute;
-	top: 50%;
-	right: 0.4rem;
-	transform: translateY(-50%);
+	grid-column: 1;
+	grid-row: 1;
+	justify-self: end;
+	align-self: center;
+	margin-right: 0.4rem;
 	display: grid;
 	gap: 0.2rem;
 	opacity: 0;
 	pointer-events: none;
 	transition: opacity 0.15s ease;
+	z-index: 1;
 }
 
-.number-input:hover .number-input__controls {
+.number-input:hover .number-input__controls,
+.number-input:focus-within .number-input__controls {
 	opacity: 1;
 	pointer-events: auto;
 }
