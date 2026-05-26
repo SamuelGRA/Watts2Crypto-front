@@ -1106,9 +1106,11 @@ export function CalculatorPage() {
                   </button>
                 ))}
               </div>
-              {/*  Repasa cuando puedas que está todo bien y subes dos commits, uno para la pantalla de
-              cálculo y otro para la refactorización de comisión por cada moneda en software y pools.
-              Después de eso solo quedaría la guía */}
+              {/*  Solo quedaría la pantalla de guía, y en cuanto al despliegue, probar a subir lo del
+              backend y levantar el web service en render, a ver si funciona la que me ha liado el 
+              copilot, recuerda que hay que meter la url base de render en una var de github y el 
+              refresh token en un secret, además tendrás que configurar las variables de entorno de
+              render para que funcione el rollo este */}
               <div className="calculator-page__hint-field">
                 <input
                   type="text"
