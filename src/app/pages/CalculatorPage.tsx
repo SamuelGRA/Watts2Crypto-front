@@ -919,7 +919,7 @@ export function CalculatorPage() {
     <section className="calculator-page">
       <div className="calculator-page__header">
         <h2>Calculadora de rentabilidad</h2>
-        <p>Cálculos estimados basados en los parámetros introducidos.</p>
+        <p>Cálculo de rentabilidad basados en los parámetros introducidos.</p>
       </div>
 
       <div className="calculator-page__content">
@@ -1106,7 +1106,7 @@ export function CalculatorPage() {
                   </button>
                 ))}
               </div>
-              {/*  Solo quedaría la pantalla de guía */}
+
               <div className="calculator-page__hint-field">
                 <input
                   type="text"
