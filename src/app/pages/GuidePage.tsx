@@ -130,9 +130,7 @@ export function GuidePage() {
       )
     }
 
-    {/*Haz los ajustes para que se vea bien en móvil (sobre todo los colores, en el móvil lo veo mucho más
-      oscuro, hay recuadros que son grisáceos que aparecen con el mismo color que el color de fondo de la 
-      app, etc. Después de eso haz que se pueda desplegar con Docker y para terminar, las pruebas.*/}
+    {/*Haz que se pueda desplegarla app con Docker y para terminar, las pruebas.*/}
 
     return (
       <div className="guide-grid guide-grid--faq">

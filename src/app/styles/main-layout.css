@@ -57,15 +57,17 @@
 }
 
 .tabs-nav__list {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 0.3rem;
-  overflow-x: auto;
   padding-block: 0.25rem;
+  width: 100%;
 }
 
 .tab-link {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.45rem;
   padding: 0.78rem 0.95rem 0.72rem;
   border-bottom: 2px solid transparent;
@@ -113,5 +115,15 @@
 
   .content-shell > :is(.calculator-page, .hardware-page, .software-page, .electricity-page, .currencies-page, .guide-page, .section-page) > * {
     min-width: 0;
+  }
+
+  .tabs-nav__list {
+    display: flex;
+    overflow-x: auto;
+    width: auto;
+  }
+
+  .tab-link {
+    justify-content: flex-start;
   }
 }
