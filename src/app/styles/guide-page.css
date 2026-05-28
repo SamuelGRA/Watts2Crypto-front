@@ -206,4 +206,14 @@
   .guide-page__tabs {
     width: 100%;
   }
+
+  .guide-source > div {
+    min-width: 0;
+  }
+
+  .guide-source svg {
+    flex-shrink: 0;
+    width: 15px;
+    height: 15px;
+  }
 }

@@ -106,4 +106,12 @@
   .theme-toggle span {
     display: none;
   }
+
+  .content-shell > :is(.calculator-page, .hardware-page, .software-page, .electricity-page, .currencies-page, .guide-page, .section-page) {
+    min-width: 0;
+  }
+
+  .content-shell > :is(.calculator-page, .hardware-page, .software-page, .electricity-page, .currencies-page, .guide-page, .section-page) > * {
+    min-width: 0;
+  }
 }

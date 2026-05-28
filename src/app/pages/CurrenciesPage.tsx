@@ -1204,8 +1204,8 @@ export function CurrenciesPage() {
                   </p>
                 </div>
               </div>
-              <p style={{ margin: 0, fontWeight: 700 }}>{selectedCriptoLabel} ({selectedCurrency})</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'flex-end' }}>
+              <p className="currencies-page__crypto-chart-title">{selectedCriptoLabel} ({selectedCurrency})</p>
+              <div className="currencies-page__crypto-chart-controls-right">
                 <div className="electricity-currency-picker" aria-label="Selector de moneda de visualización">
                   <button
                     type="button"

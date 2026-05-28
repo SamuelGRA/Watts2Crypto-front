@@ -345,11 +345,28 @@ html[data-theme='light'] .software-algorithm-tag {
   }
 
   .software-card__header {
-    flex-direction: column;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.55rem;
+  }
+
+  .software-card__header > div:first-child {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .software-card__header h3 {
+    font-size: 1rem;
   }
 
   .software-card__commission {
-    text-align: left;
+    flex: 0 0 auto;
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .software-card__commission {
+    text-align: right;
   }
 
   .pool-card__stats {
@@ -358,5 +375,21 @@ html[data-theme='light'] .software-algorithm-tag {
 
   .pool-card__commission strong {
     font-size: 1.5rem;
+  }
+
+  .pagination {
+    gap: 0.5rem;
+    padding: 0.6rem 0.25rem;
+  }
+
+  .pagination button {
+    padding: 0.42rem 0.65rem;
+    white-space: nowrap;
+  }
+
+  .pagination__info {
+    white-space: nowrap;
+    font-size: 0.8rem;
+    text-align: center;
   }
 }

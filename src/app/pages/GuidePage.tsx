@@ -67,7 +67,7 @@ const faqItems: FaqItem[] = [
   {
     question: 'A veces los datos de la app tardan mucho en cargar',
     answer:
-      'El servicio en el que está alojada la aplicación la deja en un estado de suspensión si no hay actividad durante cierta cantidad de tiempo. La alternativa que podemos ofrecer es usar la aplicación por otra vía como, por ejemplo, Docker.'
+      'El servicio en el que está alojada la aplicación la deja en un estado de suspensión si no hay actividad durante cierta cantidad de tiempo, se estima que la aplicación tarda alrededor de un minuto en volver a responder cuando esto ocurre. La alternativa que podemos ofrecer es usar la app por otra vía como, por ejemplo, Docker.'
   }
 ]
 
@@ -130,10 +130,9 @@ export function GuidePage() {
       )
     }
 
-    {/*Repasa que esté todo bien y haz commit, después de eso haz los ajustes para que se vea bien en
-      móvil (más que nada lo de las configuraciones del gráfico de monedas tradicionales y los colores,
-      que por ejemplo en los bootnes de subir y bajar cantidades en la pantalla de cálculo siguen siendo
-      verde claro). Después de eso haz que se pueda desplegar con Docker y para terminar, las pruebas.*/}
+    {/*Haz los ajustes para que se vea bien en móvil (sobre todo los colores, en el móvil lo veo mucho más
+      oscuro, hay recuadros que son grisáceos que aparecen con el mismo color que el color de fondo de la 
+      app, etc. Después de eso haz que se pueda desplegar con Docker y para terminar, las pruebas.*/}
 
     return (
       <div className="guide-grid guide-grid--faq">
@@ -158,7 +157,7 @@ export function GuidePage() {
 
         <section className="card guide-panel">
           <p className="guide-kicker">Nota importante</p>
-          <h3>Aclaración sobre resultados de los cálculos</h3>
+          <h3>Aclaración sobre los resultados de los cálculos</h3>
           <p>
             Los costes, beneficios y rendimientos son orientativos. Si cambian los precios del mercado o las
             condiciones de red de la moneda a minar; lo cual ocurre a menudo, el resultado del cálculo 
