@@ -17,7 +17,7 @@
 
 .calculator-page__content {
 	display: grid;
-	grid-template-columns: 1fr 1.15fr;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
 	gap: 1.2rem;
 	align-items: start;
 }
@@ -26,6 +26,7 @@
 	padding: 1.1rem;
 	display: grid;
 	gap: 0.9rem;
+	min-width: 0;
 }
 
 
@@ -38,6 +39,7 @@
 .calculator-page__form {
 	display: grid;
 	gap: 0.9rem;
+	min-width: 0;
 }
 
 .calculator-page__form label {
@@ -45,6 +47,7 @@
 	flex-direction: column;
 	font-size: 0.95rem;
 	gap: 0.35rem;
+	min-width: 0;
 }
 
 .calculator-page__field {
@@ -52,25 +55,29 @@
 	flex-direction: column;
 	font-size: 0.95rem;
 	gap: 0.35rem;
+	min-width: 0;
 }
 
 .calculator-page__label-row {
 	display: flex;
 	align-items: center;
 	gap: 0.45rem;
+	min-width: 0;
 }
 
 .calculator-page__label-row label {
 	display: inline-flex;
 	flex-direction: row;
 	align-items: center;
+	min-width: 0;
 }
 
 .calculator-page__label-text {
-	display: inline-flex;
+	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 	gap: 0.35rem;
-	white-space: nowrap;
+	min-width: 0;
 }
 
 .calculator-page__field-note {
@@ -154,6 +161,7 @@
 
 .calculator-page__hint-field {
 	position: relative;
+	min-width: 0;
 }
 
 .calculator-page__dropdown {
@@ -244,6 +252,7 @@
 	border-radius: 10px;
 	border: 1px solid var(--border);
 	background: var(--muted);
+	min-width: 0;
 }
 
 .calculator-page__selected-controls {
@@ -251,6 +260,7 @@
 	align-items: center;
 	justify-content: center;
 	gap: 0.4rem;
+	flex-shrink: 0;
 }
 
 .calculator-page__qty-button {
@@ -268,6 +278,10 @@
 	justify-content: center;
 	cursor: pointer;
 	box-sizing: border-box;
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	-webkit-tap-highlight-color: transparent;
 }
 
 .calculator-page__qty-button:hover {
@@ -275,12 +289,12 @@
 }
 
 html[data-theme='light'] .calculator-page__qty-button {
-	background: color-mix(in srgb, var(--primary) 25%, #ffffff 75%);
-	border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
+	background: color-mix(in srgb, var(--muted) 92%, #ffffff 8%);
+	border: 1px solid color-mix(in srgb, var(--border) 72%, var(--foreground) 28%);
 }
 
 html[data-theme='light'] .calculator-page__qty-button:hover {
-	background: color-mix(in srgb, var(--primary) 35%, #ffffff 65%);
+	background: color-mix(in srgb, var(--muted) 84%, #ffffff 16%);
 }
 
 .calculator-page__qty-value {
@@ -448,10 +462,10 @@ html[data-theme='light'] .calculator-page__qty-button:hover {
 	bottom: 0.65rem;
 	z-index: 3;
 	padding: 0.5rem;
-	border: 1px solid var(--border);
 	border-radius: 12px;
 	background: color-mix(in srgb, var(--card) 92%, transparent 8%);
 	backdrop-filter: blur(4px);
+	min-width: 0;
 }
 
 .calculator-page__submit {
@@ -472,7 +486,6 @@ html[data-theme='light'] .calculator-page__qty-button:hover {
 }
 
 .calculator-page__clear:hover:not(:disabled) {
-	/* Intensify muted background slightly without introducing primary (green) tint */
 	background: color-mix(in srgb, var(--muted) 88%, black 12%);
 }
 
@@ -650,7 +663,6 @@ html[data-theme='light'] .status-card--negative {
 	font-weight: 700;
 }
 
-/* Render newline characters in error messages */
 .negative {
   white-space: pre-line;
 }
@@ -681,6 +693,53 @@ html[data-theme='light'] .status-card--negative {
 
 	.results-grid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 760px) {
+	.calculator-page {
+		padding: 1rem 0.85rem;
+	}
+
+	.calculator-page__content > * {
+		min-width: 0;
+	}
+
+	.calculator-page__label-row {
+		flex-wrap: wrap;
+		align-items: flex-start;
+	}
+
+	.calculator-page__label-text {
+		white-space: normal;
+	}
+
+	.calculator-page__field-note {
+		margin-left: 0;
+	}
+
+	.calculator-page__selected-item {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.calculator-page__selected-controls {
+		align-self: flex-end;
+	}
+}
+
+@media (max-width: 1280px) {
+	.calculator-page__label-row {
+		flex-wrap: wrap;
+		align-items: flex-start;
+	}
+
+	.calculator-page__label-text {
+		white-space: normal;
+	}
+
+	.calculator-page__field-note {
+		margin-left: 0;
 	}
 }
 

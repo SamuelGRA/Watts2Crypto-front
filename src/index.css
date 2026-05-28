@@ -32,6 +32,7 @@
   --shadow-hard: 0 20px 44px rgba(0, 0, 0, 0.55);
 
   --container: min(1140px, 92vw);
+  color-scheme: dark;
 }
 
 html[data-theme='light'] {
@@ -55,6 +56,7 @@ html[data-theme='light'] {
 
   --shadow-soft: 0 8px 20px rgba(12, 27, 52, 0.08);
   --shadow-hard: 0 14px 28px rgba(12, 27, 52, 0.14);
+  color-scheme: light;
 }
 
 * {

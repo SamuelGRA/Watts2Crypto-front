@@ -266,6 +266,11 @@
   flex-wrap: wrap;
 }
 
+.currencies-page__crypto-chart-title {
+  margin: 0;
+  font-weight: 700;
+}
+
 @media (max-width: 760px) {
   .currencies-page__crypto-chart-controls {
     flex-direction: column;
@@ -273,7 +278,11 @@
 
   .currencies-page__crypto-chart-controls-right {
     width: 100%;
-    align-items: flex-start;
+    align-items: flex-end;
     justify-content: flex-start;
+  }
+
+  .currencies-page__crypto-chart-title {
+    margin-left: 115px;
   }
 }

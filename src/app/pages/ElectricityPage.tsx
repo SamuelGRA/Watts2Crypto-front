@@ -97,8 +97,16 @@ const ZONE_DISPLAY_LABELS_UPPER = Object.fromEntries(
   Object.entries(ZONE_DISPLAY_LABELS).map(([zone, label]) => [zone.toUpperCase(), label]),
 ) as Record<string, string>
 
+function formatNumber(value: number, minimumFractionDigits: number, maximumFractionDigits: number): string {
+  return new Intl.NumberFormat('es-ES', {
+    minimumFractionDigits,
+    maximumFractionDigits,
+    useGrouping: true,
+  }).format(value)
+}
+
 function formatPriceMwh(value: number, currency: DisplayCurrency): string {
-  return `${value.toFixed(2)} ${currency}/MWh`
+  return `${formatNumber(value, 2, 2)} ${currency}/MWh`
 }
 
 function zoneLabel(value: string): string {
@@ -183,7 +191,7 @@ function toMonthLabel(monthKey: string): string {
   return new Intl.DateTimeFormat('es-ES', { month: 'short', year: '2-digit' }).format(date)
 }
 
-function SimpleLineChart({ series, currency }: { series: LineSeries[]; currency: DisplayCurrency }) {
+function SimpleLineChart({ series, caption }: { series: LineSeries[]; caption: string }) {
   const width = 900
   const height = 280
   const padding = { top: 20, right: 50, bottom: 46, left: 42 }
@@ -303,7 +311,9 @@ function SimpleLineChart({ series, currency }: { series: LineSeries[]; currency:
   const tooltipMaxWidth = 250
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div className="electricity-chart-frame">
+      <div className="electricity-chart__caption">{caption}</div>
+      <div style={{ position: 'relative' }}>
       <svg
         ref={svgRef}
         className="electricity-chart"
@@ -317,7 +327,7 @@ function SimpleLineChart({ series, currency }: { series: LineSeries[]; currency:
           <g key={`y-${tick.y}`}>
             <line x1={padding.left} y1={tick.y} x2={width - padding.right} y2={tick.y} className="electricity-chart__grid" />
             <text x={padding.left - 8} y={tick.y + 4} textAnchor="end" className="electricity-chart__axis-label">
-              {tick.value.toFixed(0)}
+              {formatNumber(tick.value, 0, 0)}
             </text>
           </g>
         ))}
@@ -357,14 +367,6 @@ function SimpleLineChart({ series, currency }: { series: LineSeries[]; currency:
           )
         })}
 
-        <text
-          x={padding.left - 42}
-          y={padding.top - 12}
-          textAnchor="start"
-          className="electricity-chart__unit-label"
-        >
-          {`${currency}/MWh`}
-        </text>
         <rect x={padding.left} y={padding.top} width={innerWidth} height={innerHeight} fill="transparent" />
       </svg>
 
@@ -414,7 +416,7 @@ function SimpleLineChart({ series, currency }: { series: LineSeries[]; currency:
                 >
                   <div style={{ fontWeight: 700, marginBottom: 4 }}>{hp.label}</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{ fontVariantNumeric: 'tabular-nums' }}>{hp.value.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                    <div style={{ fontVariantNumeric: 'tabular-nums' }}>{formatNumber(hp.value, 2, 2)}</div>
                     <div style={{ fontSize: 12, opacity: 0.85 }}>{formatTooltipDate(hp.timestamp)}</div>
                   </div>
                 </div>
@@ -432,11 +434,12 @@ function SimpleLineChart({ series, currency }: { series: LineSeries[]; currency:
           </div>
         ))}
       </div>
+      </div>
     </div>
   )
 }
 
-function SimpleBarChart({ data, currency }: { data: BarChartData; currency: DisplayCurrency }) {
+function SimpleBarChart({ data, caption }: { data: BarChartData; caption: string }) {
   const width = 900
   const height = 280
   const padding = { top: 20, right: 50, bottom: 46, left: 42 }
@@ -476,13 +479,15 @@ function SimpleBarChart({ data, currency }: { data: BarChartData; currency: Disp
   const groupsStartX = padding.left + Math.max((innerWidth - groupsTotalWidth) / 2, 0)
 
   return (
-    <>
+    <div className="electricity-chart-frame">
+      <div className="electricity-chart__caption">{caption}</div>
+      <>
       <svg className="electricity-chart" viewBox={`0 0 ${width} ${height}`} aria-label="Promedio mensual de precio comparado por zona">
         {yLabels.map((tick) => (
           <g key={`bar-y-${tick.y}`}>
             <line x1={padding.left} y1={tick.y} x2={width - padding.right} y2={tick.y} className="electricity-chart__grid" />
             <text x={padding.left - 8} y={tick.y + 4} textAnchor="end" className="electricity-chart__axis-label">
-              {tick.value.toFixed(0)}
+              {formatNumber(tick.value, 0, 0)}
             </text>
           </g>
         ))}
@@ -523,7 +528,7 @@ function SimpleBarChart({ data, currency }: { data: BarChartData; currency: Disp
                       className="electricity-chart__bar-label"
                       style={{ fill: zoneSeries.color }}
                     >
-                      {value.toFixed(1)}
+                      {formatNumber(value, 1, 1)}
                     </text>
                   </g>
                 )
@@ -541,14 +546,6 @@ function SimpleBarChart({ data, currency }: { data: BarChartData; currency: Disp
           )
         })}
 
-        <text
-          x={padding.left - 42}
-          y={padding.top - 12}
-          textAnchor="start"
-          className="electricity-chart__unit-label"
-        >
-          {`${currency}/MWh`}
-        </text>
       </svg>
 
       <div className="electricity-line-legend" aria-label="Leyenda de zonas en la comparativa mensual">
@@ -559,7 +556,8 @@ function SimpleBarChart({ data, currency }: { data: BarChartData; currency: Disp
           </div>
         ))}
       </div>
-    </>
+      </>
+    </div>
   )
 }
 
@@ -980,6 +978,9 @@ export function ElectricityPage() {
     }))
   }, [selectableChartZones, persistedZonesSet])
 
+  const selectedChartLabel = selectedChartZone ? zoneLabel(selectedChartZone) : 'Zona seleccionada'
+  const selectedChartCaption = `${selectedChartLabel} - ${selectedCurrency}/MWh`
+
   const lineSeries = useMemo<LineSeries[]>(() => {
     return activeChartZones
       .map((zone, index) => {
@@ -1321,7 +1322,7 @@ export function ElectricityPage() {
               </div>
             </div>
           </header>
-          <SimpleLineChart series={lineSeries} currency={selectedCurrency} />
+          <SimpleLineChart series={lineSeries} caption={selectedChartCaption} />
         </article>
 
         <article className="card electricity-chart-card">
@@ -1336,7 +1337,7 @@ export function ElectricityPage() {
               </p>
             </div>
           </header>
-          <SimpleBarChart data={monthlyComparisonData} currency={selectedCurrency} />
+          <SimpleBarChart data={monthlyComparisonData} caption={selectedChartCaption} />
         </article>
       </section>
 

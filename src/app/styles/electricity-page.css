@@ -103,6 +103,19 @@
   gap: 0.8rem;
 }
 
+.electricity-chart-frame {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.electricity-chart__caption {
+  text-align: center;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--muted-foreground);
+  letter-spacing: 0.01em;
+}
+
 .electricity-chart-card header {
   display: flex;
   justify-content: space-between;
