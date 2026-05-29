@@ -1,0 +1,11 @@
+.git
+.github
+.githooks
+node_modules
+dist
+README.md
+vercel.json
+.DS_Store
+*.log
+.env
+.env.*
