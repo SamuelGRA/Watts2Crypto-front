@@ -8,6 +8,7 @@ import { fetchAllCriptomonedas, fetchCriptomonedaHistory, fetchDirectCriptomoned
 import type { MonedaTradicional } from '../../types/monedaTradicional';
 import type { Criptomoneda, CriptomonedaPrecio } from '../../types/criptomoneda';
 import { getFiatName } from '../../utils/fiatNames';
+import { useRuntimeCapabilities } from '../hooks/useRuntimeCapabilities';
 
 type LineSeriesPoint = {
   timestamp: number;
@@ -231,6 +232,8 @@ function SimpleLineChart({ series }: { series: LineSeries[] }) {
 }
 
 export function CurrenciesPage() {
+  const { directCryptoAvailable } = useRuntimeCapabilities();
+  const [isDirectCryptoHintVisible, setIsDirectCryptoHintVisible] = useState(false);
   const [view, setView] = useState<ViewMode>('cripto');
   const [rangeDays, setRangeDays] = useState<RangeDays>(90);
   const [isLoading, setIsLoading] = useState(false);
@@ -539,6 +542,14 @@ export function CurrenciesPage() {
   useEffect(() => {
     if (view !== 'cripto' || CRIPTOS.includes(selectedCripto)) return;
 
+    if (!directCryptoAvailable) {
+      setOnDemandCryptoChartHistories((current) => ({
+        ...current,
+        [selectedCripto]: [],
+      }));
+      return;
+    }
+
     let isCancelled = false;
 
     fetchDirectCriptomonedaHistory(selectedCripto)
@@ -562,7 +573,7 @@ export function CurrenciesPage() {
     return () => {
       isCancelled = true;
     };
-  }, [view, selectedCripto]);
+  }, [view, selectedCripto, directCryptoAvailable]);
 
   // LineSeries para el gráfico de divisas, usar histórico de búsqueda directa si existe, filtrado por rango 
   // si se ha seleccionado alguno
@@ -709,6 +720,10 @@ export function CurrenciesPage() {
 
   async function handleOnDemandCryptoSearch(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!directCryptoAvailable) {
+      setError('La búsqueda a demanda de criptomonedas está desactivada para despliegues locales.');
+      return;
+    }
     const symbol = cryptoSearchInput.trim().toUpperCase();
     if (!symbol) return;
     setIsOnDemandCryptoLoading(true);
@@ -952,7 +967,6 @@ export function CurrenciesPage() {
             </div>
           </div>
 
-          <p>Parámetros del cambio {getFiatName(selectedFiatBase) + " (" + selectedFiatBase + ")"} - {getFiatName(selectedFiatTarget) + " (" + selectedFiatTarget + ")"} del último año</p>
           <div className="electricity-stats">
             <article className="card electricity-stat">
               <span>Actual</span>
@@ -1139,6 +1153,22 @@ export function CurrenciesPage() {
                   <span>Evolución histórica</span>
                 </div>
                 <div style={{ marginTop: 12 }}>
+                  <div
+                    onMouseEnter={() => {
+                      if (!directCryptoAvailable) {
+                        setIsDirectCryptoHintVisible(true)
+                      }
+                    }}
+                    onMouseLeave={() => setIsDirectCryptoHintVisible(false)}
+                    onFocusCapture={() => {
+                      if (!directCryptoAvailable) {
+                        setIsDirectCryptoHintVisible(true)
+                      }
+                    }}
+                    onBlurCapture={() => setIsDirectCryptoHintVisible(false)}
+                    style={{ position: 'relative' }}
+                  >
+                    <div style={{ opacity: directCryptoAvailable ? 1 : 0.55, cursor: directCryptoAvailable ? 'auto' : 'not-allowed' }}>
                   <form className="electricity-direct-zone" onSubmit={handleOnDemandCryptoSearch} style={{ gap: 8, position: 'relative', display: 'flex', alignItems: 'center' }} autoComplete="off">
                     <div className="electricity-select-wrap" style={{ flex: 1, minWidth: 280, maxWidth: 420 }}>
                       <input
@@ -1152,7 +1182,7 @@ export function CurrenciesPage() {
                         aria-autocomplete="list"
                         aria-haspopup="listbox"
                         aria-controls="crypto-search-listbox"
-                        disabled={isOnDemandCryptoLoading}
+                        disabled={isOnDemandCryptoLoading || !directCryptoAvailable}
                       />
                       {isCryptoSearchOpen && filteredCryptoSearchOptions.length > 0 && (
                         <ul
@@ -1190,7 +1220,11 @@ export function CurrenciesPage() {
                         </ul>
                       )}
                     </div>
-                    <button type="submit" disabled={isOnDemandCryptoLoading || !cryptoSearchInput.trim()} style={{ padding: '0.36rem 0.7rem', borderRadius: 8 }}>
+                    <button
+                      type="submit"
+                      disabled={isOnDemandCryptoLoading || !cryptoSearchInput.trim() || !directCryptoAvailable}
+                      style={{ padding: '0.36rem 0.7rem', borderRadius: 8 }}
+                    >
                       {isOnDemandCryptoLoading ?
                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                           <Loader2 size={14} className="electricity-spinner" aria-hidden="true" />
@@ -1199,6 +1233,29 @@ export function CurrenciesPage() {
                         : 'Buscar'}
                     </button>
                   </form>
+                    </div>
+                  {!directCryptoAvailable && isDirectCryptoHintVisible && (
+                    <div
+                      role="tooltip"
+                      style={{
+                        position: 'absolute',
+                        left: 'calc(100% + 12px)',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'rgba(0, 0, 0, 0.88)',
+                        padding: '6px 10px',
+                        borderRadius: '6px',
+                        color: 'white',
+                        fontSize: '12px',
+                        pointerEvents: 'none',
+                        zIndex: 10,
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      La búsqueda a demanda de criptomonedas está desactivada para despliegues locales
+                    </div>
+                  )}
+                  </div>
                   <p className="electricity-direct-zone__hint" style={{ margin: '4px 0 0', fontSize: 12, maxWidth: 420 }}>
                     Las monedas buscadas aquí se obtienen por llamada directa a nuestros proveedores externos, estos datos pueden tardar en cargar.
                   </p>

@@ -130,8 +130,6 @@ export function GuidePage() {
       )
     }
 
-    {/*Haz que se pueda desplegar la app con Docker y para terminar, las pruebas.*/}
-
     return (
       <div className="guide-grid guide-grid--faq">
         <section className="card guide-panel guide-panel--featured">
