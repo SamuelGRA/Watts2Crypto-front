@@ -8,7 +8,7 @@ Watts2Crypto-front es el frontend de Watts2Crypto, una aplicación para estimar 
 
 Este repositorio debe usarse junto con el backend, si se pretende desplegar la app localmente:
 
-- [Watts2Crypto-back](../watts2crypto-back)
+- [Watts2Crypto-back](https://github.com/SamuelGRA/Watts2Crypto-back)
 
 Lo más cómodo es tener ambos repositorios en una misma carpeta padre:
 
