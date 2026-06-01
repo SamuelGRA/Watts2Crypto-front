@@ -1,5 +1,4 @@
 # Watts2Crypto-front
-# Watts2Crypto-front
 
 Watts2Crypto-front es el frontend de Watts2Crypto, una aplicación para estimar la rentabilidad de minería de criptomonedas a partir de hardware, software, pools, electricidad y cotizaciones de monedas.
 
