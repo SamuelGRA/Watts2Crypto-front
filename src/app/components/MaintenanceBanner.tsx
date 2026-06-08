@@ -118,12 +118,12 @@ export function MaintenanceBanner() {
           <h2>
             {isCalculator && hasFiatMaintenance
               ? 'Estamos actualizando los datos necesarios para el cálculo'
-              : 'Estamos actualizando los datos de esta sección'}
+              : 'Estamos actualizando nuestros datos'}
           </h2>
           <p>{message ?? 'Intente acceder más tarde.'}</p>
           <div className="maintenance-banner__status">
             <RefreshCw size={16} className="maintenance-banner__spin" aria-hidden="true" />
-            <span>La sección se reanudará en cuanto finalice la actualización.</span>
+            <span>La aplicación volverá a estar disponible en cuanto finalice la actualización.</span>
           </div>
         </div>
       </div>
