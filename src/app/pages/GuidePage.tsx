@@ -68,6 +68,21 @@ const faqItems: FaqItem[] = [
     question: 'A veces los datos de la app tardan mucho en cargar',
     answer:
       'El servicio en el que está alojada la aplicación la deja en un estado de suspensión si no hay actividad durante cierta cantidad de tiempo, se estima que la aplicación tarda alrededor de un minuto en volver a responder cuando esto ocurre. La alternativa que podemos ofrecer es usar la app por otra vía como, por ejemplo, Docker.'
+  },
+  {
+    question: '¿Qué es el hashrate?',
+    answer:
+      'El hashrate de un dispositivo de minería representa la cantidad de operaciones que puede realizar por segundo. Constituye la principal medida de la potencia del hardware de minería.'
+  },
+  {
+    question: '¿Qué es un ASIC?',
+    answer:
+      'Un ASIC (Circuito Integrado de Aplicación Específica por su traducción) es un equipo de hardware diseñado para realizar una tarea específica de la forma más eficiente posible. En el contexto de esta aplicación, están diseñados para resolver problemas matemáticos muy complejos de forma rápida.'
+  },
+  {
+    question: '¿Por qué algunos datos aparecen directamente en la aplicación y otros se deben buscar a mano?',
+    answer:
+      'El principal motivo es no colapsar la base de datos con demasiada información. Los datos por defecto mostrados en las distintas pantallas son los considerados más relevantes en su ámbito.'
   }
 ]
 
