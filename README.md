@@ -43,6 +43,22 @@ El frontend está desplegado en Vercel, este es el punto de acceso a la app, acc
 
 El frontend también puede servirse desde la imagen Docker incluida en el proyecto, junto al backend mediante `docker compose` desde el repositorio del backend. Los detalles de uso con Dokcer están indicados en el [reposiotrio del backend](#repositorio-relacionado).
 
+### 3. Uso sin Docker
+
+Si se ha optado por ejecutar la app sin usar Docker, hay que instalar las dependencias necesarias para el funcionamiento del frontend:
+
+```bash
+npm install
+```
+
+Y luego, levantar el frontend de la app:
+
+```bash
+npm run dev
+```
+
+Esto levantará la aplicación en http://localhost:5173, lista para usarse.
+
 ## Despliegue local con Docker Compose
 
 Si levantas el proyecto completo desde el backend:
