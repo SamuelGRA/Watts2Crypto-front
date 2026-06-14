@@ -23,7 +23,7 @@ watts2crypto/
 La interfaz permite navegar por:
 
 - Calculadora de rentabilidad.
-- Datos de rentabilidad de hardware (hahsrate, consumo),
+- Datos de rentabilidad de hardware (hashrate, consumo),
 - Datos de rentabilidad de software minero (monedas soportadas, comisiones).
 - Datos de costes eléctricos por zonas y evolución histórica.
 - Datos de cotizaciones de monedas tradicionales y evolución histórica.
@@ -41,7 +41,29 @@ El frontend está desplegado en Vercel, este es el punto de acceso a la app, acc
 
 ### 2. Uso con Docker
 
-El frontend también puede servirse desde la imagen Docker incluida en el proyecto, junto al backend mediante `docker compose` desde el repositorio del backend. Los detalles de uso con Dokcer están indicados en el [reposiotrio del backend](#repositorio-relacionado).
+#### Prerrequisitos
+- Docker Desktop (Windows/macOS) o Docker Engine + Docker Compose (Linux)
+
+El frontend también puede servirse desde la imagen Docker incluida en el proyecto, junto al backend mediante `docker compose` desde el repositorio del backend. Los detalles de uso con Docker están indicados en el [reposiotrio del backend](#repositorio-relacionado).
+
+### 3. Uso sin Docker
+
+#### Prerrequisitos
+- Node.js 20 o superior
+
+Si se ha optado por ejecutar la app sin usar Docker, hay que instalar las dependencias necesarias para el funcionamiento del frontend:
+
+```bash
+npm install
+```
+
+Y luego, levantar el frontend de la app (IMPORTANTE: para que el frontend funcione, antes se debe haber levantado el backend):
+
+```bash
+npm run dev
+```
+
+Esto ejecutará la aplicación en http://localhost:5173, lista para usarse. Para detenerla, basta con teclear Ctrl+C.
 
 ## Despliegue local con Docker Compose
 
